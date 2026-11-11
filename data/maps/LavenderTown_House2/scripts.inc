@@ -57,39 +57,39 @@ LavenderTown_House2_EventScript_CheckCanRateMon::
 # 29 "data/maps/LavenderTown_House2/scripts.pory"
 	special BufferMonNickname
 # 30 "data/maps/LavenderTown_House2/scripts.pory"
-	special IsMonOTIDNotPlayers
-# 31 "data/maps/LavenderTown_House2/scripts.pory"
-	goto_if_eq VAR_RESULT, TRUE, LavenderTown_House2_EventScript_CantNicknameTradeMon
-# 32 "data/maps/LavenderTown_House2/scripts.pory"
-	specialvar VAR_RESULT, IsMonOTNameNotPlayers
-# 33 "data/maps/LavenderTown_House2/scripts.pory"
-	special BufferMonNickname
-# 34 "data/maps/LavenderTown_House2/scripts.pory"
-	goto_if_eq VAR_RESULT, TRUE, LavenderTown_House2_EventScript_CantNicknameTradeMon
-# 35 "data/maps/LavenderTown_House2/scripts.pory"
 	msgbox LavenderTown_House2_Text_GiveItANicerName, MSGBOX_YESNO
-# 36 "data/maps/LavenderTown_House2/scripts.pory"
+# 31 "data/maps/LavenderTown_House2/scripts.pory"
 	goto_if_eq VAR_RESULT, YES, LavenderTown_House2_EventScript_ChooseNewNickname
-# 37 "data/maps/LavenderTown_House2/scripts.pory"
+# 32 "data/maps/LavenderTown_House2/scripts.pory"
 	goto_if_eq VAR_RESULT, NO, LavenderTown_House2_EventScript_DontRateNickname
+# 33 "data/maps/LavenderTown_House2/scripts.pory"
+	end
+# 34 "data/maps/LavenderTown_House2/scripts.pory"
+
+# 35 "data/maps/LavenderTown_House2/scripts.pory"
+LavenderTown_House2_EventScript_CantNicknameEgg::
+# 36 "data/maps/LavenderTown_House2/scripts.pory"
+	msgbox LavenderTown_House2_Text_ThatIsMerelyAnEgg
+# 37 "data/maps/LavenderTown_House2/scripts.pory"
+	release
 # 38 "data/maps/LavenderTown_House2/scripts.pory"
 	end
 # 39 "data/maps/LavenderTown_House2/scripts.pory"
 
 # 40 "data/maps/LavenderTown_House2/scripts.pory"
-LavenderTown_House2_EventScript_CantNicknameEgg::
+LavenderTown_House2_EventScript_ChooseNewNickname::
 # 41 "data/maps/LavenderTown_House2/scripts.pory"
-	msgbox LavenderTown_House2_Text_ThatIsMerelyAnEgg
+	msgbox LavenderTown_House2_Text_WhatShallNewNicknameBe
 # 42 "data/maps/LavenderTown_House2/scripts.pory"
-	release
+	call EventScript_ChangePokemonNickname
 # 43 "data/maps/LavenderTown_House2/scripts.pory"
-	end
+	specialvar VAR_RESULT, NameRaterWasNicknameChanged
 # 44 "data/maps/LavenderTown_House2/scripts.pory"
-
+	special BufferMonNickname
 # 45 "data/maps/LavenderTown_House2/scripts.pory"
-LavenderTown_House2_EventScript_CantNicknameTradeMon::
+	goto_if_eq VAR_RESULT, TRUE, LavenderTown_House2_EventScript_ChoseNewNickname
 # 46 "data/maps/LavenderTown_House2/scripts.pory"
-	msgbox LavenderTown_House2_Text_TrulyImpeccableName
+	msgbox LavenderTown_House2_Text_FromNowOnShallBeKnownAsSameName
 # 47 "data/maps/LavenderTown_House2/scripts.pory"
 	release
 # 48 "data/maps/LavenderTown_House2/scripts.pory"
@@ -97,30 +97,10 @@ LavenderTown_House2_EventScript_CantNicknameTradeMon::
 # 49 "data/maps/LavenderTown_House2/scripts.pory"
 
 # 50 "data/maps/LavenderTown_House2/scripts.pory"
-LavenderTown_House2_EventScript_ChooseNewNickname::
-# 51 "data/maps/LavenderTown_House2/scripts.pory"
-	msgbox LavenderTown_House2_Text_WhatShallNewNicknameBe
-# 52 "data/maps/LavenderTown_House2/scripts.pory"
-	call EventScript_ChangePokemonNickname
-# 53 "data/maps/LavenderTown_House2/scripts.pory"
-	specialvar VAR_RESULT, NameRaterWasNicknameChanged
-# 54 "data/maps/LavenderTown_House2/scripts.pory"
-	special BufferMonNickname
-# 55 "data/maps/LavenderTown_House2/scripts.pory"
-	goto_if_eq VAR_RESULT, TRUE, LavenderTown_House2_EventScript_ChoseNewNickname
-# 56 "data/maps/LavenderTown_House2/scripts.pory"
-	msgbox LavenderTown_House2_Text_FromNowOnShallBeKnownAsSameName
-# 57 "data/maps/LavenderTown_House2/scripts.pory"
-	release
-# 58 "data/maps/LavenderTown_House2/scripts.pory"
-	end
-# 59 "data/maps/LavenderTown_House2/scripts.pory"
-
-# 60 "data/maps/LavenderTown_House2/scripts.pory"
 LavenderTown_House2_EventScript_ChoseNewNickname::
-# 61 "data/maps/LavenderTown_House2/scripts.pory"
+# 51 "data/maps/LavenderTown_House2/scripts.pory"
 	msgbox LavenderTown_House2_Text_FromNowOnShallBeKnownAsName
-# 62 "data/maps/LavenderTown_House2/scripts.pory"
+# 52 "data/maps/LavenderTown_House2/scripts.pory"
 	release
-# 63 "data/maps/LavenderTown_House2/scripts.pory"
+# 53 "data/maps/LavenderTown_House2/scripts.pory"
 	end
