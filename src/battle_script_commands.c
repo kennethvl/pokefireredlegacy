@@ -3285,12 +3285,9 @@ static void Cmd_getexp(void)
     u16 item;
     s32 i; // also used as stringId
     u8 holdEffect;
-    s32 sentIn;
-    s32 viaExpShare = 0;
     u16 *exp = &gBattleStruct->expValue;
 
     gBattlerFainted = GetBattlerForBattleScript(gBattlescriptCurrInstr[1]);
-    sentIn = gSentPokesToOpponent[(gBattlerFainted & 2) >> 1];
 
     switch (gBattleScripting.getexpState)
     {
@@ -3310,53 +3307,13 @@ static void Cmd_getexp(void)
             gBattleStruct->givenExpMons |= gBitTable[gBattlerPartyIndexes[gBattlerFainted]];
         }
         break;
-    case 1: // calculate experience points to redistribute
-        {
-            u16 calculatedExp;
-            s32 viaSentIn;
+    case 1: // each eligible party mon receives the full experience yield
+        *exp = gSpeciesInfo[gBattleMons[gBattlerFainted].species].expYield * gBattleMons[gBattlerFainted].level / 7;
+        if (*exp == 0)
+            *exp = 1;
 
-            for (viaSentIn = 0, i = 0; i < PARTY_SIZE; i++)
-            {
-                if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) == SPECIES_NONE || GetMonData(&gPlayerParty[i], MON_DATA_HP) == 0)
-                    continue;
-                if (gBitTable[i] & sentIn)
-                    viaSentIn++;
-
-                item = GetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM);
-
-                if (item == ITEM_ENIGMA_BERRY)
-                    holdEffect = gSaveBlock1Ptr->enigmaBerry.holdEffect;
-                else
-                    holdEffect = ItemId_GetHoldEffect(item);
-
-                if (holdEffect == HOLD_EFFECT_EXP_SHARE)
-                    viaExpShare++;
-            }
-
-            calculatedExp = gSpeciesInfo[gBattleMons[gBattlerFainted].species].expYield * gBattleMons[gBattlerFainted].level / 7;
-
-            if (viaExpShare) // at least one mon is getting exp via exp share
-            {
-                *exp = SAFE_DIV(calculatedExp / 2, viaSentIn);
-                if (*exp == 0)
-                    *exp = 1;
-
-                gExpShareExp = calculatedExp / 2 / viaExpShare;
-                if (gExpShareExp == 0)
-                    gExpShareExp = 1;
-            }
-            else
-            {
-                *exp = SAFE_DIV(calculatedExp, viaSentIn);
-                if (*exp == 0)
-                    *exp = 1;
-                gExpShareExp = 0;
-            }
-
-            gBattleScripting.getexpState++;
-            gBattleStruct->expGetterMonId = 0;
-            gBattleStruct->sentInPokes = sentIn;
-        }
+        gBattleScripting.getexpState++;
+        gBattleStruct->expGetterMonId = 0;
         // fall through
     case 2: // set exp value to the poke in expgetter_id and print message
         if (gBattleControllerExecFlags == 0)
@@ -3374,16 +3331,16 @@ static void Cmd_getexp(void)
                 PlayBGM(MUS_VICTORY_WILD);
                 gBattleStruct->wildVictorySong++;
             }
-            if (holdEffect != HOLD_EFFECT_EXP_SHARE && !(gBattleStruct->sentInPokes & 1))
+            if (GetMonData(&gPlayerParty[gBattleStruct->expGetterMonId], MON_DATA_SPECIES) == SPECIES_NONE
+             || GetMonData(&gPlayerParty[gBattleStruct->expGetterMonId], MON_DATA_IS_EGG)
+             || GetMonData(&gPlayerParty[gBattleStruct->expGetterMonId], MON_DATA_HP) == 0)
             {
-                *(&gBattleStruct->sentInPokes) >>= 1;
                 gBattleScripting.getexpState = 5;
                 gBattleMoveDamage = 0; // used for exp
             }
             else if (GetMonData(&gPlayerParty[gBattleStruct->expGetterMonId], MON_DATA_LEVEL) == MAX_LEVEL
             || levelCappedNuzlocke(GetMonData(&gPlayerParty[gBattleStruct->expGetterMonId], MON_DATA_LEVEL)))
             {
-                *(&gBattleStruct->sentInPokes) >>= 1;
                 gBattleScripting.getexpState = 5;
                 gBattleMoveDamage = 0; // used for exp
                 // Added ability to gain EVs for Level 100 or Level Capped Pokemon
@@ -3393,13 +3350,7 @@ static void Cmd_getexp(void)
             {
                 if (GetMonData(&gPlayerParty[gBattleStruct->expGetterMonId], MON_DATA_HP))
                 {
-                    if (gBattleStruct->sentInPokes & 1)
-                        gBattleMoveDamage = *exp;
-                    else
-                        gBattleMoveDamage = 0;
-
-                    if (holdEffect == HOLD_EFFECT_EXP_SHARE)
-                        gBattleMoveDamage += gExpShareExp;
+                    gBattleMoveDamage = *exp;
                     if (holdEffect == HOLD_EFFECT_LUCKY_EGG)
                         gBattleMoveDamage = (gBattleMoveDamage * 150) / 100;
                     if (gBattleTypeFlags & BATTLE_TYPE_TRAINER)
@@ -3441,7 +3392,6 @@ static void Cmd_getexp(void)
                     PrepareStringBattle(STRINGID_PKMNGAINEDEXP, gBattleStruct->expGetterBattlerId);
                     MonGainEVs(&gPlayerParty[gBattleStruct->expGetterMonId], gBattleMons[gBattlerFainted].species);
                 }
-                gBattleStruct->sentInPokes >>= 1;
                 gBattleScripting.getexpState++;
             }
         }
