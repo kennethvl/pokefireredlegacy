@@ -1812,40 +1812,17 @@ static bool8 Fishing5(struct Task *task)
     return FALSE;
 }
 
-// Determine if fish bites
+// Always get a bite when this map has fishing encounters.
 static bool8 Fishing6(struct Task *task)
 {
-    bool8 bite;
-
     AlignFishingAnimationFrames(&gSprites[gPlayerAvatar.spriteId]);
     task->tStep++;
-    bite = FALSE;
 
     if (!DoesCurrentMapHaveFishingMons())
-    {
         task->tStep = FISHING_NO_BITE;
-    }
     else
-    {
-        if (!GetMonData(&gPlayerParty[0], MON_DATA_IS_EGG))
-        {
-            u8 ability = GetMonAbility(&gPlayerParty[0]);
-            if (ability == ABILITY_SUCTION_CUPS || ability  == ABILITY_STICKY_HOLD)
-            {
-                if (Random() % 100 > 14)
-                    bite = TRUE;
-            }
-        }
-        if (!bite)
-        {
-            if (Random() & 1)
-                task->tStep = FISHING_NO_BITE;
-            else
-                bite = TRUE;
-        }
-        if (bite == TRUE)
-            StartSpriteAnim(&gSprites[gPlayerAvatar.spriteId], GetFishingBiteDirectionAnimNum(GetPlayerFacingDirection()));
-    }
+        StartSpriteAnim(&gSprites[gPlayerAvatar.spriteId], GetFishingBiteDirectionAnimNum(GetPlayerFacingDirection()));
+
     return TRUE;
 }
 
@@ -1856,17 +1833,12 @@ static bool8 Fishing7(struct Task *task)
     return FALSE;
 }
 
-// We have a bite. Now, wait for the player to press A, or the timer to expire.
+// A hooked Pokemon stays on the line until the player reels it in.
 static bool8 Fishing8(struct Task *task)
 {
-    const s16 reelTimeouts[3] = {36, 33, 30};
-
     AlignFishingAnimationFrames(&gSprites[gPlayerAvatar.spriteId]);
-    task->tFrameCounter++;
-    if (task->tFrameCounter >= reelTimeouts[task->tFishingRod])
-        task->tStep = FISHING_GOT_AWAY;
-    else if (gMain.newKeys & A_BUTTON)
-        task->tStep++;
+    if (gMain.newKeys & A_BUTTON)
+        task->tStep = FISHING_ON_HOOK;
     return FALSE;
 }
 
