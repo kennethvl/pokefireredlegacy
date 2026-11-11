@@ -9674,6 +9674,8 @@ static void Cmd_handleballthrow(void)
             }
         }
 
+        // All balls guarantee capture, regardless of catch rate, HP, or status.
+        odds = 255;
         if (odds > 254) // mon caught
         {
             BtlController_EmitBallThrowAnim(BUFFER_A, BALL_3_SHAKES_SUCCESS);
