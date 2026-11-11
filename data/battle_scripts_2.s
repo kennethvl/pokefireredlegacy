@@ -75,6 +75,11 @@ BattleScript_SuccessBallThrow::
 	incrementgamestat GAME_STAT_POKEMON_CAPTURES
 BattleScript_SafariNoIncGameStat::
 	printstring STRINGID_GOTCHAPKMNCAUGHT
+	waitmessage B_WAIT_TIME_LONG
+	jumpifbattletype BATTLE_TYPE_SAFARI, BattleScript_CaughtPokemonTrySetDexFlags
+	setbyte sGIVEEXP_STATE, 0
+	getexp BS_TARGET
+BattleScript_CaughtPokemonTrySetDexFlags::
 	trysetcaughtmondexflags BattleScript_CaughtPokemonSkipNewDex
 	printstring STRINGID_PKMNDATAADDEDTODEX
 	waitstate
