@@ -19,7 +19,7 @@
     {
       "english": "MASTER BALL",
       "itemId": "ITEM_MASTER_BALL",
-      "price": 0,
+      "price": 10000,
       "holdEffect": "HOLD_EFFECT_NONE",
       "holdEffectParam": 0,
       "description_english": "The best BALL with the ultimate\\nperformance. It will catch any wild\\nPOKéMON without fail.",
@@ -179,7 +179,7 @@
     {
       "english": "LUXURY BALL",
       "itemId": "ITEM_LUXURY_BALL",
-      "price": 1000,
+      "price": 200,
       "holdEffect": "HOLD_EFFECT_NONE",
       "holdEffectParam": 0,
       "description_english": "A comfortable BALL that makes a\\ncaptured wild POKéMON quickly grow\\nfriendly.",
@@ -1011,7 +1011,7 @@
     {
       "english": "HP UP",
       "itemId": "ITEM_HP_UP",
-      "price": 9800,
+      "price": 10,
       "holdEffect": "HOLD_EFFECT_NONE",
       "holdEffectParam": 0,
       "description_english": "A nutritious drink for POKéMON.\\nIt raises the base HP of one\\nPOKéMON.",
@@ -1027,7 +1027,7 @@
     {
       "english": "PROTEIN",
       "itemId": "ITEM_PROTEIN",
-      "price": 9800,
+      "price": 10,
       "holdEffect": "HOLD_EFFECT_NONE",
       "holdEffectParam": 0,
       "description_english": "A nutritious drink for POKéMON.\\nIt raises the base ATTACK stat of\\none POKéMON.",
@@ -1043,7 +1043,7 @@
     {
       "english": "IRON",
       "itemId": "ITEM_IRON",
-      "price": 9800,
+      "price": 10,
       "holdEffect": "HOLD_EFFECT_NONE",
       "holdEffectParam": 0,
       "description_english": "A nutritious drink for POKéMON.\\nIt raises the base DEFENSE stat of\\none POKéMON.",
@@ -1059,7 +1059,7 @@
     {
       "english": "CARBOS",
       "itemId": "ITEM_CARBOS",
-      "price": 9800,
+      "price": 10,
       "holdEffect": "HOLD_EFFECT_NONE",
       "holdEffectParam": 0,
       "description_english": "A nutritious drink for POKéMON.\\nIt raises the base SPEED stat of\\none POKéMON.",
@@ -1075,7 +1075,7 @@
     {
       "english": "CALCIUM",
       "itemId": "ITEM_CALCIUM",
-      "price": 9800,
+      "price": 10,
       "holdEffect": "HOLD_EFFECT_NONE",
       "holdEffectParam": 0,
       "description_english": "A nutritious drink for POKéMON.\\nIt raises the base SP. ATK stat\\nof one POKéMON.",
@@ -1091,7 +1091,7 @@
     {
       "english": "RARE CANDY",
       "itemId": "ITEM_RARE_CANDY",
-      "price": 0,
+      "price": 10,
       "holdEffect": "HOLD_EFFECT_NONE",
       "holdEffectParam": 0,
       "description_english": "A candy that is packed with energy.\\nIt raises the level of a POKéMON\\nby one.",
@@ -1107,7 +1107,7 @@
     {
       "english": "PP UP",
       "itemId": "ITEM_PP_UP",
-      "price": 9800,
+      "price": 10,
       "holdEffect": "HOLD_EFFECT_NONE",
       "holdEffectParam": 0,
       "description_english": "Slightly raises the maximum PP of\\na selected move for one POKéMON.",
@@ -1123,7 +1123,7 @@
     {
       "english": "ZINC",
       "itemId": "ITEM_ZINC",
-      "price": 9800,
+      "price": 10,
       "holdEffect": "HOLD_EFFECT_NONE",
       "holdEffectParam": 0,
       "description_english": "A nutritious drink for POKéMON.\\nIt raises the base SP. DEF stat\\nof one POKéMON.",
@@ -1139,7 +1139,7 @@
     {
       "english": "PP MAX",
       "itemId": "ITEM_PP_MAX",
-      "price": 9800,
+      "price": 10,
       "holdEffect": "HOLD_EFFECT_NONE",
       "holdEffectParam": 0,
       "description_english": "Raises the PP of a selected move\\nto its maximum level for one\\nPOKéMON.",
@@ -2451,7 +2451,7 @@
     {
       "english": "POMEG BERRY",
       "itemId": "ITEM_POMEG_BERRY",
-      "price": 300,
+      "price": 10,
       "holdEffect": "HOLD_EFFECT_NONE",
       "holdEffectParam": 0,
       "description_english": "Makes a POKéMON friendly but\\nlowers base HP.",
@@ -2467,7 +2467,7 @@
     {
       "english": "KELPSY BERRY",
       "itemId": "ITEM_KELPSY_BERRY",
-      "price": 300,
+      "price": 10,
       "holdEffect": "HOLD_EFFECT_NONE",
       "holdEffectParam": 0,
       "description_english": "Makes a POKéMON friendly but\\nlowers base ATTACK.",
@@ -2483,7 +2483,7 @@
     {
       "english": "QUALOT BERRY",
       "itemId": "ITEM_QUALOT_BERRY",
-      "price": 300,
+      "price": 10,
       "holdEffect": "HOLD_EFFECT_NONE",
       "holdEffectParam": 0,
       "description_english": "Makes a POKéMON friendly but\\nlowers base DEFENSE.",
@@ -2499,7 +2499,7 @@
     {
       "english": "HONDEW BERRY",
       "itemId": "ITEM_HONDEW_BERRY",
-      "price": 300,
+      "price": 10,
       "holdEffect": "HOLD_EFFECT_NONE",
       "holdEffectParam": 0,
       "description_english": "Makes a POKéMON friendly but\\nlowers base SP. ATK.",
@@ -2515,7 +2515,7 @@
     {
       "english": "GREPA BERRY",
       "itemId": "ITEM_GREPA_BERRY",
-      "price": 300,
+      "price": 10,
       "holdEffect": "HOLD_EFFECT_NONE",
       "holdEffectParam": 0,
       "description_english": "Makes a POKéMON friendly but\\nlowers base SP. DEF.",
@@ -2531,7 +2531,7 @@
     {
       "english": "TAMATO BERRY",
       "itemId": "ITEM_TAMATO_BERRY",
-      "price": 1000,
+      "price": 10,
       "holdEffect": "HOLD_EFFECT_NONE",
       "holdEffectParam": 0,
       "description_english": "Makes a POKéMON friendly but\\nlowers base SPEED.",
@@ -3155,7 +3155,7 @@
     {
       "english": "LUCKY EGG",
       "itemId": "ITEM_LUCKY_EGG",
-      "price": 9800,
+      "price": 100,
       "holdEffect": "HOLD_EFFECT_LUCKY_EGG",
       "holdEffectParam": 0,
       "description_english": "An item to be held by a POKéMON.\\nAn egg filled with happiness that\\nearns extra EXP. points in battle.",
