@@ -49,14 +49,7 @@ void ExitSafariMode(void)
 
 bool8 SafariZoneTakeStep(void)
 {
-    if (GetSafariZoneFlag() == FALSE)
-        return FALSE;
-    gSafariZoneStepCounter--;
-    if (gSafariZoneStepCounter == 0)
-    {
-        ScriptContext_SetupScript(SafariZone_EventScript_TimesUp);
-        return TRUE;
-    }
+    // Safari sessions do not expire from walking.
     return FALSE;
 }
 

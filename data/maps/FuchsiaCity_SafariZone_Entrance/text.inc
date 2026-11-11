@@ -32,7 +32,7 @@ FuchsiaCity_SafariZone_Entrance_Text_AlrightYouCanGo::
 
 FuchsiaCity_SafariZone_Entrance_Text_CallYouOnPAWhenYouRunOut::
     .string "We'll call you on the PA when you\n"
-    .string "run out of time or SAFARI BALLS.\p"
+    .string "run out of SAFARI BALLS.\p"
     .string "Well, I'll wish you the best of\n"
     .string "luck!$"
 
@@ -78,8 +78,8 @@ FuchsiaCity_SafariZone_Entrance_Text_ExplainSafariZone::
     .string "If you throw ROCKS, the POKéMON\n"
     .string "becomes more likely to flee, but\l"
     .string "easier to catch.\p"
-    .string "When you run out of time or SAFARI\n"
-    .string "BALLS, it's game over for you!$"
+    .string "When you run out of SAFARI BALLS,\n"
+    .string "it's game over for you!$"
 
 FuchsiaCity_SafariZone_Entrance_Text_SorryYoureARegularHere::
     .string "Sorry, you're a regular here!$"
