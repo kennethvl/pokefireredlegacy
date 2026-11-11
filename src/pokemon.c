@@ -4540,16 +4540,16 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                         if(itemEffect[idx] != 201)
                         {
                             // Limit the increase
-                            if (evCount >= 510)
+                            if (evCount >= MAX_TOTAL_EVS || dataSigned >= EV_ITEM_RAISE_LIMIT)
                                 return TRUE;
-                            if (dataSigned < 100)
+                            if (dataSigned < EV_ITEM_RAISE_LIMIT)
                             {
-                                if (dataSigned + itemEffect[idx] > 100)
-                                    evDelta = 100 - (dataSigned + itemEffect[idx]) + itemEffect[idx];
+                                if (dataSigned + itemEffect[idx] > EV_ITEM_RAISE_LIMIT)
+                                    evDelta = EV_ITEM_RAISE_LIMIT - dataSigned;
                                 else
                                     evDelta = itemEffect[idx];
-                                if (evCount + evDelta > 510)
-                                    evDelta += 510 - (evCount + evDelta);
+                                if (evCount + evDelta > MAX_TOTAL_EVS)
+                                    evDelta += MAX_TOTAL_EVS - (evCount + evDelta);
                                 dataSigned += evDelta;
                             }
                         }
@@ -4762,16 +4762,16 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                         dataSigned = GetMonData(mon, sGetMonDataEVConstants[i + 2], NULL);
                         if(itemEffect[idx] != 201)
                         {
-                            if (evCount >= 510)
+                            if (evCount >= MAX_TOTAL_EVS || dataSigned >= EV_ITEM_RAISE_LIMIT)
                                 return TRUE;
-                            if (dataSigned < 100)
+                            if (dataSigned < EV_ITEM_RAISE_LIMIT)
                             {
-                                if (dataSigned + itemEffect[idx] > 100)
-                                    evDelta = 100 - (dataSigned + itemEffect[idx]) + itemEffect[idx];
+                                if (dataSigned + itemEffect[idx] > EV_ITEM_RAISE_LIMIT)
+                                    evDelta = EV_ITEM_RAISE_LIMIT - dataSigned;
                                 else
                                     evDelta = itemEffect[idx];
-                                if (evCount + evDelta > 510)
-                                    evDelta += 510 - (evCount + evDelta);
+                                if (evCount + evDelta > MAX_TOTAL_EVS)
+                                    evDelta += MAX_TOTAL_EVS - (evCount + evDelta);
                                 dataSigned += evDelta;
                             }
                         }
