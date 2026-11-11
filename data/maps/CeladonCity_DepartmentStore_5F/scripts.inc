@@ -117,34 +117,42 @@ CeladonCity_DepartmentStore_5F_Vitamins::
 # 59 "data/maps/CeladonCity_DepartmentStore_5F/scripts.pory"
 	.2byte ITEM_CARBOS
 # 60 "data/maps/CeladonCity_DepartmentStore_5F/scripts.pory"
-	.2byte ITEM_NONE
+	.2byte ITEM_PP_UP
 # 61 "data/maps/CeladonCity_DepartmentStore_5F/scripts.pory"
-	release
+	.2byte ITEM_PP_MAX
 # 62 "data/maps/CeladonCity_DepartmentStore_5F/scripts.pory"
-	end
+	.2byte ITEM_RARE_CANDY
 # 63 "data/maps/CeladonCity_DepartmentStore_5F/scripts.pory"
-
+	.2byte ITEM_LUCKY_EGG
 # 64 "data/maps/CeladonCity_DepartmentStore_5F/scripts.pory"
-CeladonCity_EventScript_MatchingOutfits::
+	.2byte ITEM_NONE
 # 65 "data/maps/CeladonCity_DepartmentStore_5F/scripts.pory"
-	msgbox CeladonCity_Text_MatchingOutfits, MSGBOX_NPC
+	release
 # 66 "data/maps/CeladonCity_DepartmentStore_5F/scripts.pory"
 	end
 # 67 "data/maps/CeladonCity_DepartmentStore_5F/scripts.pory"
 
 # 68 "data/maps/CeladonCity_DepartmentStore_5F/scripts.pory"
-CeladonCity_EventScript_MatchingOutfitsGloom::
+CeladonCity_EventScript_MatchingOutfits::
 # 69 "data/maps/CeladonCity_DepartmentStore_5F/scripts.pory"
-	lock
+	msgbox CeladonCity_Text_MatchingOutfits, MSGBOX_NPC
 # 70 "data/maps/CeladonCity_DepartmentStore_5F/scripts.pory"
-	faceplayer
+	end
 # 71 "data/maps/CeladonCity_DepartmentStore_5F/scripts.pory"
-	playmoncry SPECIES_GLOOM, 0
+
 # 72 "data/maps/CeladonCity_DepartmentStore_5F/scripts.pory"
-	msgbox CeladonCity_Text_MatchingOutfitsGloom
+CeladonCity_EventScript_MatchingOutfitsGloom::
 # 73 "data/maps/CeladonCity_DepartmentStore_5F/scripts.pory"
-	waitmoncry
+	lock
 # 74 "data/maps/CeladonCity_DepartmentStore_5F/scripts.pory"
-	release
+	faceplayer
 # 75 "data/maps/CeladonCity_DepartmentStore_5F/scripts.pory"
+	playmoncry SPECIES_GLOOM, 0
+# 76 "data/maps/CeladonCity_DepartmentStore_5F/scripts.pory"
+	msgbox CeladonCity_Text_MatchingOutfitsGloom
+# 77 "data/maps/CeladonCity_DepartmentStore_5F/scripts.pory"
+	waitmoncry
+# 78 "data/maps/CeladonCity_DepartmentStore_5F/scripts.pory"
+	release
+# 79 "data/maps/CeladonCity_DepartmentStore_5F/scripts.pory"
 	end
