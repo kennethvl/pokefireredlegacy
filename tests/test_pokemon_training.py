@@ -1,5 +1,8 @@
 """Transactions use production pricing/application functions and actual IV field IDs."""
 import unittest
+import json
+import struct
+from collections import deque
 import test_exp_progression as progression
 
 ROOT = progression.ROOT
@@ -89,6 +92,48 @@ int main(void) {
 }
 '''
         progression.ProgressionTests.compile_and_run(self, code)
+
+    def test_every_center_has_reachable_adjacent_trainers(self):
+        layouts = {layout['id']: layout for layout in json.loads((ROOT / 'data/layouts/layouts.json').read_text())['layouts']}
+        maps = sorted((ROOT / 'data/maps').glob('*PokemonCenter_1F/map.json'))
+        self.assertEqual(len(maps), 19)
+        for path in maps:
+            data = json.loads(path.read_text())
+            layout = layouts[data['layout']]
+            width, height = layout['width'], layout['height']
+            raw = (ROOT / layout['blockdata_filepath']).read_bytes()
+            tiles = struct.unpack('<' + 'H' * (len(raw) // 2), raw)
+            nature = [o for o in data['object_events'] if o['script'] == 'PokemonTraining_EventScript_Nature']
+            ivs = [o for o in data['object_events'] if o['script'] == 'PokemonTraining_EventScript_Ivs']
+            self.assertEqual(len(nature), 1, path.parent.name)
+            self.assertEqual(len(ivs), 1, path.parent.name)
+            man, woman = nature[0], ivs[0]
+            self.assertEqual(man['graphics_id'], 'OBJ_EVENT_GFX_OLD_MAN_1')
+            self.assertEqual(woman['graphics_id'], 'OBJ_EVENT_GFX_OLD_WOMAN')
+            self.assertEqual((woman['x'], woman['y']), (man['x'] + 1, man['y']))
+            occupied = {(o['x'], o['y']) for o in data['object_events']}
+            self.assertEqual(len(occupied), len(data['object_events']), path.parent.name)
+            self.assertLessEqual(len(data['object_events']), 15)
+            warps = {(w['x'], w['y']) for w in data['warp_events']}
+            for npc in [man, woman]:
+                cell = npc['y'] * width + npc['x']
+                self.assertEqual((tiles[cell] >> 10) & 3, 0, path.parent.name)
+                self.assertEqual(tiles[cell] >> 12, npc['elevation'])
+                self.assertNotIn((npc['x'], npc['y']), warps)
+            # Flood the walkable floor from a doorway, treating existing NPCs as obstacles.
+            start = max(data['warp_events'], key=lambda w: w['y'])
+            seen, queue = set(), deque([(start['x'], start['y'])])
+            while queue:
+                x, y = queue.popleft()
+                if (x, y) in seen or (x, y) in occupied or not (0 <= x < width and 0 <= y < height):
+                    continue
+                if (tiles[y * width + x] >> 10) & 3:
+                    continue
+                seen.add((x, y))
+                queue.extend([(x-1,y),(x+1,y),(x,y-1),(x,y+1)])
+            for npc in [man, woman]:
+                x, y = npc['x'], npc['y']
+                self.assertTrue(any(pos in seen for pos in [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]), path.parent.name)
 
 
 if __name__ == '__main__':
