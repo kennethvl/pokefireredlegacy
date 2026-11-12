@@ -5,6 +5,7 @@
 
 extern void (*gCB2_AfterEvolution)(void);
 
+void SetEvolutionMoveLearningRange(u8 oldLevel);
 void BeginEvolutionScene(struct Pokemon* mon, u16 speciesToEvolve, u8, u8 partyId);
 void EvolutionScene(struct Pokemon* mon, u16 speciesToEvolve, u8, u8 partyId);
 void TradeEvolutionScene(struct Pokemon* mon, u16 speciesToEvolve, u8 preEvoSpriteId, u8 partyId);

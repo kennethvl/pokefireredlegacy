@@ -104,7 +104,6 @@ static void WaitForMonSelection(void);
 static void CompleteWhenChoseItem(void);
 static u32 GetTypeEffectivenessMultiplier(u8 atkType, u8 defType1, u8 defType2);
 static void Task_LaunchLvlUpAnim(u8 taskId);
-static void Task_PrepareToGiveExpWithExpBar(u8 taskId);
 static void DestroyExpTaskAndCompleteOnInactiveTextPrinter(u8 taskId);
 static void Task_UpdateLvlInHealthbox(u8 taskId);
 static void PrintLinkStandbyMsg(void);
@@ -115,7 +114,6 @@ static void PlayerDoMoveAnimation(void);
 static void Task_StartSendOutAnim(u8 taskId);
 static void PreviewDeterminativeMoveTargets(void);
 static void SwitchIn_HandleSoundAndEnd(void);
-static void Task_GiveExpWithExpBar(u8 taskId);
 static void Task_CreateLevelUpVerticalStripes(u8 taskId);
 // static void StartSendOutAnim(u8 battlerId, bool8 dontClearSubstituteBit, bool8);
 static void StartSendOutAnim(u8 battlerId, bool8 dontClearSubstituteBit);
@@ -1074,121 +1072,50 @@ void CompleteOnInactiveTextPrinter(void)
 #define tExpTask_monId      data[0]
 #define tExpTask_gainedExp  data[1]
 #define tExpTask_battler    data[2]
-#define tExpTask_frames     data[10]
 // TODO: document other used fields
 
 static void Task_GiveExpToMon(u8 taskId)
 {
-    u32 monId = (u8)(gTasks[taskId].tExpTask_monId);
+    u8 monId = gTasks[taskId].tExpTask_monId;
     u8 battlerId = gTasks[taskId].tExpTask_battler;
-    s16 gainedExp = gTasks[taskId].tExpTask_gainedExp;
-
-    if (IsDoubleBattle() == TRUE || monId != gBattlerPartyIndexes[battlerId]) // Give exp without moving the expbar.
-    {
-        struct Pokemon *mon = &gPlayerParty[monId];
-        u16 species = GetMonData(mon, MON_DATA_SPECIES);
-        u8 level = GetMonData(mon, MON_DATA_LEVEL);
-        u32 currExp = GetMonData(mon, MON_DATA_EXP);
-        u32 nextLvlExp = gExperienceTables[gSpeciesInfo[species].growthRate][level + 1];
-
-        if (currExp + gainedExp >= nextLvlExp)
-        {
-            u8 savedActiveBattler;
-
-            SetMonData(mon, MON_DATA_EXP, &nextLvlExp);
-            CalculateMonStats(mon);
-            gainedExp -= nextLvlExp - currExp;
-            savedActiveBattler = gActiveBattler;
-            gActiveBattler = battlerId;
-            BtlController_EmitTwoReturnValues(1, RET_VALUE_LEVELED_UP, gainedExp);
-            gActiveBattler = savedActiveBattler;
-            if (IsDoubleBattle() == TRUE
-             && ((u16)(monId) == gBattlerPartyIndexes[battlerId] || (u16)(monId) == gBattlerPartyIndexes[battlerId ^ BIT_FLANK]))
-                gTasks[taskId].func = Task_LaunchLvlUpAnim;
-            else
-                gTasks[taskId].func = DestroyExpTaskAndCompleteOnInactiveTextPrinter;
-        }
-        else
-        {
-            currExp += gainedExp;
-            SetMonData(mon, MON_DATA_EXP, &currExp);
-            gBattlerControllerFuncs[battlerId] = CompleteOnInactiveTextPrinter;
-            DestroyTask(taskId);
-        }
-    }
-    else
-    {
-        gTasks[taskId].func = Task_PrepareToGiveExpWithExpBar;
-    }
-}
-
-static void Task_PrepareToGiveExpWithExpBar(u8 taskId)
-{
-    u8 monIndex = gTasks[taskId].tExpTask_monId;
-    s32 gainedExp = gTasks[taskId].tExpTask_gainedExp;
-    u8 battlerId = gTasks[taskId].tExpTask_battler;
-    struct Pokemon *mon = &gPlayerParty[monIndex];
-    u8 level = GetMonData(mon, MON_DATA_LEVEL);
+    struct Pokemon *mon = &gPlayerParty[monId];
     u16 species = GetMonData(mon, MON_DATA_SPECIES);
-    u32 exp = GetMonData(mon, MON_DATA_EXP);
-    u32 currLvlExp = gExperienceTables[gSpeciesInfo[species].growthRate][level];
-    u32 expToNextLvl;
+    u8 oldLevel = GetMonData(mon, MON_DATA_LEVEL);
+    u8 levelLimit = oldLevel;
+    u32 exp = GetMonData(mon, MON_DATA_EXP) + (u16)gTasks[taskId].tExpTask_gainedExp;
+    u32 maxExp;
+    u8 savedActiveBattler;
 
-    exp -= currLvlExp;
-    expToNextLvl = gExperienceTables[gSpeciesInfo[species].growthRate][level + 1] - currLvlExp;
-    SetBattleBarStruct(battlerId, gHealthboxSpriteIds[battlerId], expToNextLvl, exp, -gainedExp);
-    PlaySE(SE_EXP);
-    gTasks[taskId].func = Task_GiveExpWithExpBar;
-}
-
-static void Task_GiveExpWithExpBar(u8 taskId)
-{
-    if (gTasks[taskId].tExpTask_frames < 13)
+    do
     {
-        ++gTasks[taskId].tExpTask_frames;
+        levelLimit++;
+    } while (levelLimit < MAX_LEVEL && !levelCappedNuzlocke(levelLimit));
+    maxExp = gExperienceTables[gSpeciesInfo[species].growthRate][levelLimit];
+    if (exp > maxExp)
+        exp = maxExp;
+    SetMonData(mon, MON_DATA_EXP, &exp);
+    CalculateMonStats(mon);
+
+    if (GetMonData(mon, MON_DATA_LEVEL) > oldLevel)
+    {
+        savedActiveBattler = gActiveBattler;
+        gActiveBattler = battlerId;
+        BtlController_EmitTwoReturnValues(1, RET_VALUE_LEVELED_UP, 0);
+        gActiveBattler = savedActiveBattler;
+        if (monId == gBattlerPartyIndexes[battlerId]
+         || (IsDoubleBattle() && monId == gBattlerPartyIndexes[battlerId ^ BIT_FLANK]))
+            gTasks[taskId].func = Task_LaunchLvlUpAnim;
+        else
+            gTasks[taskId].func = DestroyExpTaskAndCompleteOnInactiveTextPrinter;
     }
     else
     {
-        u8 monId = gTasks[taskId].tExpTask_monId;
-        s16 gainedExp = gTasks[taskId].tExpTask_gainedExp;
-        u8 battlerId = gTasks[taskId].tExpTask_battler;
-        s16 newExpPoints;
-
-        newExpPoints = MoveBattleBar(battlerId, gHealthboxSpriteIds[battlerId], EXP_BAR, 0);
-        SetHealthboxSpriteVisible(gHealthboxSpriteIds[battlerId]);
-        if (newExpPoints == -1) // The bar has been filled with given exp points.
-        {
-            u8 level;
-            s32 currExp;
-            u16 species;
-            s32 expOnNextLvl;
-
-            m4aSongNumStop(SE_EXP);
-            level = GetMonData(&gPlayerParty[monId], MON_DATA_LEVEL);
-            currExp = GetMonData(&gPlayerParty[monId], MON_DATA_EXP);
-            species = GetMonData(&gPlayerParty[monId], MON_DATA_SPECIES);
-            expOnNextLvl = gExperienceTables[gSpeciesInfo[species].growthRate][level + 1];
-            if (currExp + gainedExp >= expOnNextLvl)
-            {
-                u8 savedActiveBattler;
-
-                SetMonData(&gPlayerParty[monId], MON_DATA_EXP, &expOnNextLvl);
-                CalculateMonStats(&gPlayerParty[monId]);
-                gainedExp -= expOnNextLvl - currExp;
-                savedActiveBattler = gActiveBattler;
-                gActiveBattler = battlerId;
-                BtlController_EmitTwoReturnValues(1, RET_VALUE_LEVELED_UP, gainedExp);
-                gActiveBattler = savedActiveBattler;
-                gTasks[taskId].func = Task_LaunchLvlUpAnim;
-            }
-            else
-            {
-                currExp += gainedExp;
-                SetMonData(&gPlayerParty[monId], MON_DATA_EXP, &currExp);
-                gBattlerControllerFuncs[battlerId] = CompleteOnInactiveTextPrinter;
-                DestroyTask(taskId);
-            }
-        }
+        if (monId == gBattlerPartyIndexes[battlerId])
+            UpdateHealthboxAttribute(gHealthboxSpriteIds[battlerId], mon, HEALTHBOX_ALL);
+        else if (IsDoubleBattle() && monId == gBattlerPartyIndexes[battlerId ^ BIT_FLANK])
+            UpdateHealthboxAttribute(gHealthboxSpriteIds[battlerId ^ BIT_FLANK], mon, HEALTHBOX_ALL);
+        gBattlerControllerFuncs[battlerId] = CompleteOnInactiveTextPrinter;
+        DestroyTask(taskId);
     }
 }
 

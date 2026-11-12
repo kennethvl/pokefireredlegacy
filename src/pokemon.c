@@ -59,6 +59,7 @@ struct MonSpritesGfxManager
 };
 
 static EWRAM_DATA u8 sLearningMoveTableID = 0;
+static EWRAM_DATA u8 sLearningMoveLevel = 0;
 EWRAM_DATA u8 gPlayerPartyCount = 0;
 EWRAM_DATA u8 gEnemyPartyCount = 0;
 EWRAM_DATA struct Pokemon gEnemyParty[PARTY_SIZE] = {};
@@ -2433,60 +2434,41 @@ static void GiveBoxMonInitialMoveset(struct BoxPokemon *boxMon)
 
 u16 MonTryLearningNewMove(struct Pokemon *mon, bool8 firstMove)
 {
-    u32 retVal = MOVE_NONE;
+    return MonTryLearningNewMoveInRange(mon, firstMove, GetMonData(mon, MON_DATA_LEVEL, NULL) - 1);
+}
+
+// Offer every move learned after the old level, up to the mon's current level.
+u16 MonTryLearningNewMoveInRange(struct Pokemon *mon, bool8 firstMove, u8 oldLevel)
+{
     u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
     u8 level = GetMonData(mon, MON_DATA_LEVEL, NULL);
-    u8 deoxysForme;
+    const u16 *learnset = gLevelUpLearnsets[species];
+    u16 entry;
 
-    if(species == SPECIES_DEOXYS)
+    if (species == SPECIES_DEOXYS)
+        learnset = sDeoxysLevelUpLearnsets[GetMonData(mon, MON_DATA_FORME, NULL)];
+    if (firstMove)
     {
-        deoxysForme = GetMonData(mon, MON_DATA_FORME, NULL);
-        if (firstMove)
-        {
-            sLearningMoveTableID = 0;
+        sLearningMoveTableID = 0;
+        sLearningMoveLevel = oldLevel + 1;
+    }
 
-            while ((sDeoxysLevelUpLearnsets[deoxysForme][sLearningMoveTableID] & 0xFE00) != (level << 9))
+    // Some learnsets are not sorted; visit levels in order and retain same-level order.
+    while (sLearningMoveLevel <= level)
+    {
+        while ((entry = learnset[sLearningMoveTableID]) != LEVEL_UP_END)
+        {
+            sLearningMoveTableID++;
+            if ((entry & LEVEL_UP_MOVE_LV) == (sLearningMoveLevel << 9))
             {
-                sLearningMoveTableID++;
-                if (sDeoxysLevelUpLearnsets[deoxysForme][sLearningMoveTableID] == LEVEL_UP_END)
-                    return 0;
+                gMoveToLearn = entry & LEVEL_UP_MOVE_ID;
+                return GiveMoveToMon(mon, gMoveToLearn);
             }
         }
-
-        if ((sDeoxysLevelUpLearnsets[deoxysForme][sLearningMoveTableID] & 0xFE00) == (level << 9))
-        {
-            gMoveToLearn = (sDeoxysLevelUpLearnsets[deoxysForme][sLearningMoveTableID] & 0x1FF);
-            sLearningMoveTableID++;
-            retVal = GiveMoveToMon(mon, gMoveToLearn);
-        }
+        sLearningMoveTableID = 0;
+        sLearningMoveLevel++;
     }
-    else
-    {
-        // since you can learn more than one move per level
-        // the game needs to know whether you decided to
-        // learn it or keep the old set to avoid asking
-        // you to learn the same move over and over again
-        if (firstMove)
-        {
-            sLearningMoveTableID = 0;
-
-            while ((gLevelUpLearnsets[species][sLearningMoveTableID] & LEVEL_UP_MOVE_LV) != (level << 9))
-            {
-                sLearningMoveTableID++;
-                if (gLevelUpLearnsets[species][sLearningMoveTableID] == LEVEL_UP_END)
-                    return MOVE_NONE;
-            }
-        }
-
-        if ((gLevelUpLearnsets[species][sLearningMoveTableID] & LEVEL_UP_MOVE_LV) == (level << 9))
-        {
-            gMoveToLearn = (gLevelUpLearnsets[species][sLearningMoveTableID] & LEVEL_UP_MOVE_ID);
-            sLearningMoveTableID++;
-            retVal = GiveMoveToMon(mon, gMoveToLearn);
-        }
-
-        return retVal;
-    }
+    return MOVE_NONE;
 }
 
 void DeleteFirstMoveAndGiveMoveToMon(struct Pokemon *mon, u16 move)

@@ -40,6 +40,7 @@ struct EvoInfo
 
 // EWRAM vars
 static EWRAM_DATA struct EvoInfo *sEvoStructPtr = NULL;
+static EWRAM_DATA u8 sPendingEvolutionMoveLevel = 0;
 static EWRAM_DATA u16 *sBgAnimPal = NULL;
 
 // IWRAM common
@@ -165,6 +166,7 @@ static void CB2_BeginEvolutionScene(void)
 #define tLearnMoveNoState   data[8]
 #define tEvoWasStopped      data[9]
 #define tPartyId            data[10]
+#define tMoveLearnOldLevel  data[11]
 
 #define TASK_BIT_CAN_STOP       (1 << 0)
 #define TASK_BIT_LEARN_MOVE     (1 << 7)
@@ -195,6 +197,12 @@ static void Task_BeginEvolutionScene(u8 taskId)
         }
         break;
     }
+}
+
+// Consumed by the next normal evolution scene; other evolutions use their current level.
+void SetEvolutionMoveLearningRange(u8 oldLevel)
+{
+    sPendingEvolutionMoveLevel = oldLevel;
 }
 
 void BeginEvolutionScene(struct Pokemon* mon, u16 postEvoSpecies, bool8 canStopEvo, u8 partyId)
@@ -298,6 +306,11 @@ void EvolutionScene(struct Pokemon* mon, u16 postEvoSpecies, bool8 canStopEvo, u
     gTasks[id].tLearnsFirstMove = TRUE;
     gTasks[id].tEvoWasStopped = FALSE;
     gTasks[id].tPartyId = partyId;
+    if (sPendingEvolutionMoveLevel != 0)
+        gTasks[id].tMoveLearnOldLevel = sPendingEvolutionMoveLevel;
+    else
+        gTasks[id].tMoveLearnOldLevel = GetMonData(mon, MON_DATA_LEVEL) - 1;
+    sPendingEvolutionMoveLevel = 0;
 
     memcpy(&sEvoStructPtr->savedPalette, &gPlttBufferUnfaded[BG_PLTT_ID(2)], sizeof(sEvoStructPtr->savedPalette));
 
@@ -777,7 +790,10 @@ static void Task_EvolutionScene(u8 taskId)
         if (!IsTextPrinterActive(0))
         {
             HelpSystem_Enable();
-            var = MonTryLearningNewMove(mon, gTasks[taskId].tLearnsFirstMove);
+            if (gTasks[taskId].tEvoWasStopped)
+                var = MOVE_NONE;
+            else
+                var = MonTryLearningNewMoveInRange(mon, gTasks[taskId].tLearnsFirstMove, gTasks[taskId].tMoveLearnOldLevel);
             if (var != MOVE_NONE && !gTasks[taskId].tEvoWasStopped)
             {
                 u8 text[20];
@@ -1428,6 +1444,7 @@ static void Task_TradeEvolutionScene(u8 taskId)
 #undef tLearnMoveYesState
 #undef tLearnMoveNoState
 #undef tEvoWasStopped
+#undef tMoveLearnOldLevel
 #undef tPartyId
 
 static void EvoDummyFunc(void)

@@ -226,6 +226,7 @@ COMMON_DATA void (*gPreBattleCallback1)(void) = NULL;
 COMMON_DATA void (*gBattleMainFunc)(void) = NULL;
 COMMON_DATA struct BattleResults gBattleResults = {0};
 COMMON_DATA u8 gLeveledUpInBattle = 0;
+EWRAM_DATA u8 gBattleInitialMonLevels[PARTY_SIZE] = {0};
 COMMON_DATA void (*gBattlerControllerFuncs[MAX_BATTLERS_COUNT])(void) = {0};
 COMMON_DATA u8 gHealthboxSpriteIds[MAX_BATTLERS_COUNT] = {0};
 COMMON_DATA u8 gMultiUsePlayerCursor = 0;
@@ -2252,6 +2253,8 @@ static void BattleStartClearSetData(void)
     gBattleScripting.animTurn = 0;
     gBattleScripting.animTargetsHit = 0;
     gLeveledUpInBattle = 0;
+    for (i = 0; i < PARTY_SIZE; i++)
+        gBattleInitialMonLevels[i] = GetMonData(&gPlayerParty[i], MON_DATA_LEVEL);
     gAbsentBattlerFlags = 0;
     gBattleStruct->runTries = 0;
     gBattleStruct->safariRockThrowCounter = 0;
@@ -3846,7 +3849,7 @@ static void FreeResetData_ReturnToOvOrDoEvolutions(void)
     if (!gPaletteFade.active)
     {
         ResetSpriteData();
-        if (gLeveledUpInBattle == 0 || gBattleOutcome != B_OUTCOME_WON)
+        if (gLeveledUpInBattle == 0 || (gBattleOutcome != B_OUTCOME_WON && gBattleOutcome != B_OUTCOME_CAUGHT))
             gBattleMainFunc = ReturnFromBattleToOverworld;
         else
             gBattleMainFunc = TryEvolvePokemon;
@@ -3880,6 +3883,7 @@ static void TryEvolvePokemon(void)
                 if (species != SPECIES_NONE)
                 {
                     gBattleMainFunc = WaitForEvoSceneToFinish;
+                    SetEvolutionMoveLearningRange(gBattleInitialMonLevels[i]);
                     EvolutionScene(&gPlayerParty[i], species, 0x81, i);
                     return;
                 }

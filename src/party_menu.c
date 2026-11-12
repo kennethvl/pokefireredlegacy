@@ -5169,11 +5169,28 @@ static void Task_TryLearningNextMoveAfterText(u8 taskId)
 
 }
 
+static EWRAM_DATA u8 sRareCandyStartLevel = 0;
+
 void ItemUseCB_RareCandy(u8 taskId, TaskFunc func)
 {
     struct Pokemon *mon = &gPlayerParty[gPartyMenu.slotId];
     u16 item = gSpecialVar_ItemId;
     bool8 noEffect;
+
+    // At the level ceiling a candy can still trigger one eligible level-up evolution.
+    if (GetMonData(mon, MON_DATA_LEVEL) == MAX_LEVEL
+     && !GetMonData(mon, MON_DATA_IS_EGG)
+     && !(FlagGet(FLAG_NUZLOCKE) && GetMonData(mon, MON_DATA_DEAD))
+     && CanUseRareCandyHardcore()
+     && GetEvolutionTargetSpecies(mon, EVO_MODE_NORMAL, ITEM_NONE) != SPECIES_NONE)
+    {
+        sRareCandyStartLevel = MAX_LEVEL - 1;
+        gPartyMenuUseExitCallback = TRUE;
+        ItemUse_SetQuestLogEvent(QL_EVENT_USED_ITEM, mon, item, 0xFFFF);
+        RemoveBagItem(item, 1);
+        PartyMenuTryEvolution(taskId);
+        return;
+    }
 
     if ((GetMonData(mon, MON_DATA_LEVEL) != MAX_LEVEL
     && !levelCappedNuzlocke(GetMonData(mon, MON_DATA_LEVEL)))
@@ -5204,6 +5221,7 @@ static void ItemUseCB_RareCandyStep(u8 taskId, TaskFunc func)
     s16 *arrayPtr = ptr->data;
     u8 level;
 
+    sRareCandyStartLevel = GetMonData(mon, MON_DATA_LEVEL);
     GetMonLevelUpWindowStats(mon, arrayPtr);
     ExecuteTableBasedItemEffect_(gPartyMenu.slotId, gSpecialVar_ItemId, 0);
     GetMonLevelUpWindowStats(mon, &ptr->data[NUM_STATS]);
@@ -5342,6 +5360,8 @@ static void PartyMenuTryEvolution(u8 taskId)
             gCB2_AfterEvolution = CB2_ReturnToPartyMenuUsingRareCandy;
         else
             gCB2_AfterEvolution = gPartyMenu.exitCallback;
+        if (gSpecialVar_ItemId == ITEM_RARE_CANDY)
+            SetEvolutionMoveLearningRange(sRareCandyStartLevel);
         BeginEvolutionScene(mon, targetSpecies, TRUE, gPartyMenu.slotId);
         DestroyTask(taskId);
     }

@@ -3280,10 +3280,12 @@ static void Cmd_jumpiftype(void)
         gBattlescriptCurrInstr += 7;
 }
 
+static EWRAM_DATA u8 sExpGetterStartLevel = 0;
+
 static void Cmd_getexp(void)
 {
     u16 item;
-    s32 i; // also used as stringId
+    u32 i;
     u8 holdEffect;
     u16 *exp = &gBattleStruct->expValue;
 
@@ -3314,8 +3316,20 @@ static void Cmd_getexp(void)
 
         gBattleScripting.getexpState++;
         gBattleStruct->expGetterMonId = 0;
+        for (i = 0; i < PARTY_SIZE; i++)
+        {
+            if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) != SPECIES_NONE
+             && !GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG)
+             && GetMonData(&gPlayerParty[i], MON_DATA_HP) != 0
+             && GetMonData(&gPlayerParty[i], MON_DATA_LEVEL) < MAX_LEVEL
+             && !levelCappedNuzlocke(GetMonData(&gPlayerParty[i], MON_DATA_LEVEL)))
+            {
+                PrepareStringBattle(STRINGID_PARTYGAINEDEXP, GetBattlerAtPosition(B_POSITION_PLAYER_LEFT));
+                break;
+            }
+        }
         // fall through
-    case 2: // set exp value to the poke in expgetter_id and print message
+    case 2: // calculate this party mon's award and grant EVs
         if (gBattleControllerExecFlags == 0)
         {
             item = GetMonData(&gPlayerParty[gBattleStruct->expGetterMonId], MON_DATA_HELD_ITEM);
@@ -3357,14 +3371,7 @@ static void Cmd_getexp(void)
                         gBattleMoveDamage = (gBattleMoveDamage * 150) / 100;
                     if (IsTradedMon(&gPlayerParty[gBattleStruct->expGetterMonId])
                      && !(gBattleTypeFlags & BATTLE_TYPE_POKEDUDE))
-                    {
                         gBattleMoveDamage = (gBattleMoveDamage * 150) / 100;
-                        i = STRINGID_ABOOSTED;
-                    }
-                    else
-                    {
-                        i = STRINGID_EMPTYSTRING4;
-                    }
 
                     // get exp getter battlerId
                     if (gBattleTypeFlags & BATTLE_TYPE_DOUBLE)
@@ -3384,12 +3391,6 @@ static void Cmd_getexp(void)
                         gBattleStruct->expGetterBattlerId = 0;
                     }
 
-                    PREPARE_MON_NICK_WITH_PREFIX_BUFFER(gBattleTextBuff1, gBattleStruct->expGetterBattlerId, gBattleStruct->expGetterMonId);
-                    // buffer 'gained' or 'gained a boosted'
-                    PREPARE_STRING_BUFFER(gBattleTextBuff2, i);
-                    PREPARE_WORD_NUMBER_BUFFER(gBattleTextBuff3, 5, gBattleMoveDamage);
-
-                    PrepareStringBattle(STRINGID_PKMNGAINEDEXP, gBattleStruct->expGetterBattlerId);
                     MonGainEVs(&gPlayerParty[gBattleStruct->expGetterMonId], gBattleMons[gBattlerFainted].species);
                 }
                 gBattleScripting.getexpState++;
@@ -3403,6 +3404,7 @@ static void Cmd_getexp(void)
             if (GetMonData(&gPlayerParty[gBattleStruct->expGetterMonId], MON_DATA_HP) && GetMonData(&gPlayerParty[gBattleStruct->expGetterMonId], MON_DATA_LEVEL) != MAX_LEVEL
             && !levelCappedNuzlocke(GetMonData(&gPlayerParty[gBattleStruct->expGetterMonId], MON_DATA_LEVEL)))
             {
+                sExpGetterStartLevel = GetMonData(&gPlayerParty[gBattleStruct->expGetterMonId], MON_DATA_LEVEL);
                 gBattleResources->beforeLvlUp->stats[STAT_HP]    = GetMonData(&gPlayerParty[gBattleStruct->expGetterMonId], MON_DATA_MAX_HP);
                 gBattleResources->beforeLvlUp->stats[STAT_ATK]   = GetMonData(&gPlayerParty[gBattleStruct->expGetterMonId], MON_DATA_ATK);
                 gBattleResources->beforeLvlUp->stats[STAT_DEF]   = GetMonData(&gPlayerParty[gBattleStruct->expGetterMonId], MON_DATA_DEF);
@@ -3433,7 +3435,8 @@ static void Cmd_getexp(void)
                 gLeveledUpInBattle |= gBitTable[gBattleStruct->expGetterMonId];
                 gBattlescriptCurrInstr = BattleScript_LevelUp;
                 gBattleMoveDamage = (gBattleBufferB[gActiveBattler][2] | (gBattleBufferB[gActiveBattler][3] << 8));
-                AdjustFriendship(&gPlayerParty[gBattleStruct->expGetterMonId], FRIENDSHIP_EVENT_GROW_LEVEL);
+                for (i = sExpGetterStartLevel; i < GetMonData(&gPlayerParty[gBattleStruct->expGetterMonId], MON_DATA_LEVEL); i++)
+                    AdjustFriendship(&gPlayerParty[gBattleStruct->expGetterMonId], FRIENDSHIP_EVENT_GROW_LEVEL);
 
                 // update battle mon structure after level up
                 if (gBattlerPartyIndexes[0] == gBattleStruct->expGetterMonId && gBattleMons[0].hp)
@@ -5234,9 +5237,9 @@ static void Cmd_handlelearnnewmove(void)
     const u8 *learnedMovePtr = T1_READ_PTR(gBattlescriptCurrInstr + 1);
     const u8 *nothingToLearnPtr = T1_READ_PTR(gBattlescriptCurrInstr + 5);
 
-    u16 learnMove = MonTryLearningNewMove(&gPlayerParty[gBattleStruct->expGetterMonId], gBattlescriptCurrInstr[9]);
+    u16 learnMove = MonTryLearningNewMoveInRange(&gPlayerParty[gBattleStruct->expGetterMonId], gBattlescriptCurrInstr[9], sExpGetterStartLevel);
     while (learnMove == MON_ALREADY_KNOWS_MOVE)
-        learnMove = MonTryLearningNewMove(&gPlayerParty[gBattleStruct->expGetterMonId], FALSE);
+        learnMove = MonTryLearningNewMoveInRange(&gPlayerParty[gBattleStruct->expGetterMonId], FALSE, sExpGetterStartLevel);
 
     if (learnMove == MOVE_NONE)
     {
