@@ -153,7 +153,7 @@ PokemonTraining_Text_NatureIntro::
 # 77 "data/scripts/pokemon_training.pory"
 	.string "I can change a POKéMON's stat nature\n"
 # 78 "data/scripts/pokemon_training.pory"
-	.string "for ¥5,000. Its original nature stays\l"
+	.string "for ¥50. Its original nature stays\l"
 # 79 "data/scripts/pokemon_training.pory"
 	.string "the same for breeding.\p"
 # 80 "data/scripts/pokemon_training.pory"
@@ -165,7 +165,7 @@ PokemonTraining_Text_NatureIntro::
 # 83 "data/scripts/pokemon_training.pory"
 PokemonTraining_Text_IvIntro::
 # 84 "data/scripts/pokemon_training.pory"
-	.string "I offer IV training for ¥5,000 per\n"
+	.string "I offer IV training for ¥50 per\n"
 # 85 "data/scripts/pokemon_training.pory"
 	.string "stat. Each chosen IV becomes 31.\p"
 # 86 "data/scripts/pokemon_training.pory"

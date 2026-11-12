@@ -75,13 +75,13 @@ PokemonTraining_EventScript_NoMoney::
 
 PokemonTraining_Text_NatureIntro::
 	.string "I can change a POKéMON's stat nature\n"
-	.string "for ¥5,000. Its original nature stays\l"
+	.string "for ¥50. Its original nature stays\l"
 	.string "the same for breeding.\p"
 	.string "SYNCHRONIZE uses the stat nature, too.\n"
 	.string "Would you like my help?$"
 
 PokemonTraining_Text_IvIntro::
-	.string "I offer IV training for ¥5,000 per\n"
+	.string "I offer IV training for ¥50 per\n"
 	.string "stat. Each chosen IV becomes 31.\p"
 	.string "This also affects breeding and\n"
 	.string "HIDDEN POWER. Shall we begin?$"
