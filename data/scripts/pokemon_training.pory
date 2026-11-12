@@ -1,0 +1,119 @@
+raw `
+PokemonTraining_EventScript_Nature::
+	lock
+	faceplayer
+	msgbox PokemonTraining_Text_NatureIntro, MSGBOX_YESNO
+	goto_if_ne VAR_RESULT, YES, PokemonTraining_EventScript_Goodbye
+	setvar VAR_0x8006, TRAINING_NATURE
+	goto PokemonTraining_EventScript_ChooseMon
+
+PokemonTraining_EventScript_Ivs::
+	lock
+	faceplayer
+	msgbox PokemonTraining_Text_IvIntro, MSGBOX_YESNO
+	goto_if_ne VAR_RESULT, YES, PokemonTraining_EventScript_Goodbye
+	setvar VAR_0x8006, TRAINING_IV
+
+PokemonTraining_EventScript_ChooseMon::
+	special ChoosePartyMon
+	waitstate
+	goto_if_ge VAR_0x8004, PARTY_SIZE, PokemonTraining_EventScript_Goodbye
+	specialvar VAR_RESULT, GetPartyMonSpecies
+	goto_if_eq VAR_RESULT, SPECIES_EGG, PokemonTraining_EventScript_Invalid
+	special BufferMonNickname
+	goto_if_eq VAR_0x8006, TRAINING_IV, PokemonTraining_EventScript_ChooseIv
+	msgbox PokemonTraining_Text_ChooseNature
+	special ShowNatureTrainingMenu
+	waitstate
+	goto PokemonTraining_EventScript_Quote
+
+PokemonTraining_EventScript_ChooseIv::
+	msgbox PokemonTraining_Text_ChooseIv
+	special ShowIvTrainingMenu
+	waitstate
+
+PokemonTraining_EventScript_Quote::
+	goto_if_eq VAR_RESULT, TRAINING_CANCEL, PokemonTraining_EventScript_Goodbye
+	copyvar VAR_0x8005, VAR_RESULT
+	specialvar VAR_RESULT, QuotePokemonTraining
+	goto_if_eq VAR_RESULT, TRAINING_NO_CHANGE, PokemonTraining_EventScript_NoChange
+	goto_if_ne VAR_RESULT, TRAINING_SUCCESS, PokemonTraining_EventScript_Invalid
+	showmoneybox 0, 0
+	msgbox PokemonTraining_Text_Confirm, MSGBOX_YESNO
+	goto_if_ne VAR_RESULT, YES, PokemonTraining_EventScript_CancelPayment
+	specialvar VAR_RESULT, ApplyPokemonTraining
+	hidemoneybox
+	goto_if_eq VAR_RESULT, TRAINING_NO_MONEY, PokemonTraining_EventScript_NoMoney
+	goto_if_eq VAR_RESULT, TRAINING_NO_CHANGE, PokemonTraining_EventScript_NoChange
+	goto_if_ne VAR_RESULT, TRAINING_SUCCESS, PokemonTraining_EventScript_Invalid
+	playse SE_SHOP
+	msgbox PokemonTraining_Text_Done
+	release
+	end
+
+PokemonTraining_EventScript_CancelPayment::
+	hidemoneybox
+PokemonTraining_EventScript_Goodbye::
+	msgbox PokemonTraining_Text_Goodbye
+	release
+	end
+
+PokemonTraining_EventScript_NoChange::
+	msgbox PokemonTraining_Text_NoChange
+	release
+	end
+
+PokemonTraining_EventScript_Invalid::
+	msgbox PokemonTraining_Text_Invalid
+	release
+	end
+
+PokemonTraining_EventScript_NoMoney::
+	msgbox PokemonTraining_Text_NoMoney
+	release
+	end
+
+PokemonTraining_Text_NatureIntro::
+	.string "I can change a POKéMON's stat nature\n"
+	.string "for ¥5,000. Its original nature stays\l"
+	.string "the same for breeding.\p"
+	.string "SYNCHRONIZE uses the stat nature, too.\n"
+	.string "Would you like my help?$"
+
+PokemonTraining_Text_IvIntro::
+	.string "I offer IV training for ¥5,000 per\n"
+	.string "stat. Each chosen IV becomes 31.\p"
+	.string "This also affects breeding and\n"
+	.string "HIDDEN POWER. Shall we begin?$"
+
+PokemonTraining_Text_ChooseNature::
+	.string "Choose {STR_VAR_1}'s stat nature.\n"
+	.string "Use UP and DOWN to scroll the list.$"
+
+PokemonTraining_Text_ChooseIv::
+	.string "Choose an IV for {STR_VAR_1}.\n"
+	.string "MAX stats won't cost you anything.$"
+
+PokemonTraining_Text_Confirm::
+	.string "{STR_VAR_1}: {STR_VAR_3}\n"
+	.string "The total is ¥{STR_VAR_2}. Proceed?$"
+
+PokemonTraining_Text_Done::
+	.string "All done!\n"
+	.string "Take good care of {STR_VAR_1}!$"
+
+PokemonTraining_Text_NoChange::
+	.string "That choice needs no change.\n"
+	.string "You haven't been charged.$"
+
+PokemonTraining_Text_Invalid::
+	.string "I can only train a POKéMON,\n"
+	.string "not an EGG.$"
+
+PokemonTraining_Text_NoMoney::
+	.string "You don't have enough money.\n"
+	.string "Nothing has been changed.$"
+
+PokemonTraining_Text_Goodbye::
+	.string "Come back whenever you like!$"
+`

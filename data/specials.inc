@@ -453,4 +453,8 @@ gSpecials::
 	def_special UpdateLoreleiDollCollection
 	def_special LoopWingFlapSound
 	def_special CreateEnemyEventMon
+	def_special ShowNatureTrainingMenu
+	def_special ShowIvTrainingMenu
+	def_special QuotePokemonTraining
+	def_special ApplyPokemonTraining
 gSpecialsEnd::
