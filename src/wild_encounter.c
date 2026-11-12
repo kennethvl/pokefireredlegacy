@@ -1101,15 +1101,14 @@ static void AddToWildEncounterRateBuff(u8 encounterRate)
 
 static u8 PickWildMonNature(void)
 {
-    // check synchronize for a pokemon with the same ability
+    // The lead Synchronize user always passes on its effective stat nature.
     if (!GetMonData(&gPlayerParty[0], MON_DATA_SANITY_IS_EGG)
-        && GetMonAbility(&gPlayerParty[0]) == ABILITY_SYNCHRONIZE
-        && Random() % 2 == 0)
+        && GetMonAbility(&gPlayerParty[0]) == ABILITY_SYNCHRONIZE)
     {
-        return GetMonData(&gPlayerParty[0], MON_DATA_PERSONALITY) % 25;
+        return GetStatNature(&gPlayerParty[0]);
     }
     // random nature
-    return Random() % 25;
+    return Random() % NUM_NATURES;
 }
 static bool8 IsAbilityAllowingEncounter(u8 level)
 {

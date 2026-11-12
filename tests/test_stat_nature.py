@@ -68,6 +68,32 @@ int main(void) {
 '''
         progression.ProgressionTests.compile_and_run(self, code)
 
+    def test_synchronize_uses_effective_nature_every_time(self):
+        code = progression.COMMON + r'''
+#include "constants/abilities.h"
+int ability = ABILITY_SYNCHRONIZE, randomCalls;
+u8 GetMonAbility(struct Pokemon *mon) {(void)mon; return ability;}
+u8 GetStatNature(struct Pokemon *mon) {return mon->fields[MON_DATA_STAT_NATURE];}
+u16 Random(void) {return randomCalls++;}
+''' + progression.function('src/wild_encounter.c', 'PickWildMonNature') + r'''
+int main(void) {
+    int i;
+    gPlayerParty[0].fields[MON_DATA_PERSONALITY] = NATURE_ADAMANT;
+    gPlayerParty[0].fields[MON_DATA_STAT_NATURE] = NATURE_MODEST;
+    for (i = 0; i < 100; i++) assert(PickWildMonNature() == NATURE_MODEST);
+    assert(randomCalls == 0);
+    // The lead's HP is deliberately irrelevant, matching the existing lead-ability rule.
+    gPlayerParty[0].fields[MON_DATA_HP] = 0;
+    assert(PickWildMonNature() == NATURE_MODEST);
+    ability = ABILITY_NONE;
+    assert(PickWildMonNature() < NUM_NATURES && randomCalls == 1);
+    ability = ABILITY_SYNCHRONIZE; gPlayerParty[0].fields[MON_DATA_SANITY_IS_EGG] = TRUE;
+    assert(PickWildMonNature() < NUM_NATURES && randomCalls == 2);
+    puts("Synchronize: 100 percent effective nature, random fallback and egg exclusion passed");
+}
+'''
+        progression.ProgressionTests.compile_and_run(self, code)
+
     def test_summary_labels_fit(self):
         text = (ROOT / 'src/text.c').read_text()
         body = re.search(r'sFontSmallLatinGlyphWidths\[\]\s*=\s*\{(.*?)\};', text, re.S).group(1)
