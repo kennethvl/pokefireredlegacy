@@ -346,6 +346,7 @@ struct SaveBlock2
               u16 optionsFollowPokemon:1; // whether the lead POKéMON follows the player on the field
               u16 optionsSurfPokemon:1; // whether the SURF blob sprite is replaced with the surfing POKéMON's sprite
               u16 optionsFieldMoveLearnset:1; // whether party POKéMON that can LEARN an HM move may use it without knowing it
+              u16 optionsExpAllDisabled:1; // 0 = full-party EXP (default), 1 = classic EXP distribution
     /*0x018*/ struct Pokedex pokedex;
     /*0x090*/ u8 filler_90[0x8];
     /*0x098*/ struct Time localTimeOffset;

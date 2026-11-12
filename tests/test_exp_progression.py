@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def function(path, name):
     source = (ROOT / path).read_text()
     import re
-    match = re.search(r"^(?:static )?(?:void|bool8|u16) " + name + r"\([^;]*?\)\n\{", source, re.M)
+    match = re.search(r"^(?:static )?(?:void|bool8|u8|u16) " + name + r"\([^;]*?\)\n\{", source, re.M)
     assert match, name
     start = match.start()
     pos = match.end()
@@ -258,6 +258,9 @@ int main(void) {
 struct {u16 expYield;} gSpeciesInfo[NUM_SPECIES];
 struct {u16 species, item, ability, hp, maxHP, attack, defense, speed, spAttack, spDefense; u8 level;} gBattleMons[4];
 struct {struct {u8 holdEffect;} enigmaBerry;} save, *gSaveBlock1Ptr = &save;
+struct {u8 optionsExpAllDisabled;} options, *gSaveBlock2Ptr = &options;
+u8 gSentPokesToOpponent[2];
+u16 gExpShareExp;
 struct {u16 expValue; u8 givenExpMons, expGetterMonId, expGetterBattlerId, wildVictorySong;} battle, *gBattleStruct = &battle;
 struct {u8 getexpState;} gBattleScripting;
 struct {u16 stats[6];} stats;
@@ -275,7 +278,11 @@ u8 GetBattlerForBattleScript(u8 battler) {(void)battler; return 1;}
 u8 GetBattlerSide(u8 battler) {return battler & 1;}
 u8 GetBattlerAtPosition(u8 position) {return position;}
 bool8 levelCappedNuzlocke(u8 level) {return level >= cap;}
-u8 ItemId_GetHoldEffect(u16 item) {return item == ITEM_LUCKY_EGG ? HOLD_EFFECT_LUCKY_EGG : 0;}
+u8 ItemId_GetHoldEffect(u16 item) {
+    if (item == ITEM_LUCKY_EGG) return HOLD_EFFECT_LUCKY_EGG;
+    if (item == ITEM_EXP_SHARE) return HOLD_EFFECT_EXP_SHARE;
+    return 0;
+}
 bool8 IsTradedMon(struct Pokemon *mon) {return mon->fields[MON_DATA_OT_ID] != 0;}
 void BattleStopLowHpSound(void) {}
 void PlayBGM(u16 song) {(void)song;}
@@ -296,7 +303,9 @@ void BattleScriptPushCursor(void) {}
 void AdjustFriendship(struct Pokemon *mon, int event) {
     assert(event == FRIENDSHIP_EVENT_GROW_LEVEL); friendship[mon-gPlayerParty]++;
 }
-''' + function("src/battle_script_commands.c", "Cmd_getexp") + r'''
+''' + function("src/battle_script_commands.c", "GetMonExpHoldEffect")
+        code += function("src/battle_script_commands.c", "CanMonReceiveBattleExp")
+        code += function("src/battle_script_commands.c", "Cmd_getexp") + r'''
 void run_award(void) {
     int iterations = 0;
     gBattleScripting.getexpState = 0; gBattlescriptCurrInstr = expScript;
@@ -307,6 +316,16 @@ void run_award(void) {
             summaries[gBattleStruct->expGetterMonId]++;
             gBattlescriptCurrInstr = expScript;
         }
+    }
+}
+void reset_awards(void) {
+    int i;
+    cap = 100; partyMessages = 0;
+    memset(gained, 0, sizeof(gained)); memset(evs, 0, sizeof(evs));
+    memset(summaries, 0, sizeof(summaries)); memset(friendship, 0, sizeof(friendship));
+    for (i = 0; i < 3; i++) {
+        gPlayerParty[i].fields[MON_DATA_LEVEL] = 5;
+        gPlayerParty[i].fields[MON_DATA_HP] = 20;
     }
 }
 int main(void) {
@@ -336,7 +355,52 @@ int main(void) {
     cap = 20; partyMessages = 0;
     run_award(); assert(partyMessages == 0);
     for (i = 0; i < 3; i++) assert(summaries[i] == 1 && evs[i] == 2);
-    puts("Party EXP flow: one message, one summary per mon, bonuses, exclusions and EVs passed");
+    // OFF restores the original split, with no award to an uninvolved party mon.
+    reset_awards(); options.optionsExpAllDisabled = TRUE; gSentPokesToOpponent[0] = 3;
+    gPlayerParty[1].fields[MON_DATA_HELD_ITEM] = ITEM_NONE;
+    gPlayerParty[2].fields[MON_DATA_OT_ID] = 0;
+    run_award();
+    assert(partyMessages == 1 && gained[0] == 50 && gained[1] == 50 && gained[2] == 0);
+    assert(evs[0] == 1 && evs[1] == 1 && evs[2] == 0);
+    // A held Exp. Share still gets its pool in classic mode.
+    reset_awards(); gPlayerParty[2].fields[MON_DATA_HELD_ITEM] = ITEM_EXP_SHARE;
+    run_award(); assert(gained[0] == 25 && gained[1] == 25 && gained[2] == 50);
+    assert(evs[0] == 1 && evs[1] == 1 && evs[2] == 1);
+    // A participant holding Exp. Share receives both portions, with multiple holders.
+    reset_awards(); gPlayerParty[0].fields[MON_DATA_HELD_ITEM] = ITEM_EXP_SHARE;
+    run_award(); assert(gained[0] == 50 && gained[1] == 25 && gained[2] == 25);
+    // Fainted holders don't dilute the pool or receive EXP/EVs.
+    reset_awards(); gPlayerParty[2].fields[MON_DATA_HP] = 0;
+    run_award(); assert(gained[0] == 75 && gained[1] == 25 && gained[2] == 0 && evs[2] == 0);
+    // Turning it back ON restores full awards even when Exp. Share is held.
+    reset_awards(); options.optionsExpAllDisabled = FALSE;
+    run_award(); assert(gained[0] == 100 && gained[1] == 100 && gained[2] == 100);
+    puts("Party EXP toggle: full/classic awards, held Exp. Share, exclusions and EVs passed");
+}
+'''
+        self.compile_and_run(code)
+
+    def test_exp_option_save_layout_and_default(self):
+        code = r'''
+#include "global.h"
+#include <assert.h>
+#include <stdio.h>
+struct SaveBlock2 saveBlock, *gSaveBlock2Ptr = &saveBlock;
+''' + function("src/new_game.c", "SetDefaultOptions") + r'''
+int main(void) {
+    struct SaveBlock2 reloaded;
+    SetDefaultOptions();
+    assert(!saveBlock.optionsExpAllDisabled);
+    assert(offsetof(struct SaveBlock2, pokedex) == 0x18);
+    saveBlock.optionsExpAllDisabled = TRUE;
+    memcpy(&reloaded, &saveBlock, sizeof(saveBlock));
+    assert(reloaded.optionsExpAllDisabled);
+    assert(reloaded.optionsFieldMoveLearnset == saveBlock.optionsFieldMoveLearnset);
+    assert(reloaded.optionsTextSpeed == OPTIONS_TEXT_SPEED_FAST);
+    saveBlock.optionsExpAllDisabled = FALSE;
+    memcpy(&reloaded, &saveBlock, sizeof(saveBlock));
+    assert(!reloaded.optionsExpAllDisabled);
+    puts("EXP ALL defaults ON and persists in the existing option padding");
 }
 '''
         self.compile_and_run(code)
