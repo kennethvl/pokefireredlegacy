@@ -200,7 +200,7 @@
     {
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_OLD_MAN_1",
-      "x": 9,
+      "x": 3,
       "y": 14,
       "elevation": 3,
       "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
@@ -214,7 +214,7 @@
     {
       "type": "object",
       "graphics_id": "OBJ_EVENT_GFX_OLD_WOMAN",
-      "x": 10,
+      "x": 4,
       "y": 14,
       "elevation": 3,
       "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
@@ -278,7 +278,5 @@
       "script": "IndigoPlateau_PokemonCenter_1F_EventScript_HardcoreCandyCheck"
     }
   ],
-  "bg_events": [
-
-  ]
+  "bg_events": []
 }

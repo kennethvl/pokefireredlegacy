@@ -157,7 +157,7 @@ static void ShowTrainingMenu(bool8 natureMenu)
         sTrainingItems[i].index = i;
         if (i == count - 1)
         {
-            sTrainingItems[i].label = gText_Cancel;
+            sTrainingItems[i].label = gText_OptionMenuCancel;
             sTrainingItems[i].index = TRAINING_CANCEL;
         }
         else if (natureMenu)
