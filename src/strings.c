@@ -16,6 +16,7 @@ const u8 gExpandedPlaceholder_Red[] = _("RED");
 const u8 gExpandedPlaceholder_Green[] = _("GREEN");
 const u8 gText_EggNickname[] = _("EGG");
 const u8 gText_MenuPokemon[] = _("POKéMON");
+const u8 gText_MenuStorage[] = _("STORAGE");
 const u8 gText_NewGame[] = _("NEW GAME");
 const u8 gText_Continue[] = _("CONTINUE");
 const u8 gTextJP_Options[] = _("せっていを かえる");
@@ -965,6 +966,7 @@ const u8 gText_SavingDontTurnOffThePower2[] = _("SAVING…\nDON'T TURN OFF THE P
 
 // Start menu option descriptions
 const u8 gStartMenuDesc_Pokedex[] = _("A device that records POKéMON secrets\nupon meeting or catching them.");
+const u8 gStartMenuDesc_Storage[] = _("Organize POKéMON in your party\nand Storage Boxes.");
 const u8 gStartMenuDesc_Pokemon[] = _("Check and organize POKéMON that are\ntraveling with you in your party.");
 const u8 gStartMenuDesc_Bag[] = _("Equipped with pockets for storing items\nyou bought, received, or found.");
 const u8 gStartMenuDesc_Player[] = _("Check your money and other game data.");

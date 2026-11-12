@@ -16,6 +16,7 @@
 #include "constants/help_system.h"
 
 static EWRAM_DATA u8 sPreviousBoxOption = 0;
+static EWRAM_DATA bool8 sStorageOpenedFromStartMenu = FALSE;
 static EWRAM_DATA struct ChooseBoxMenu *sChooseBoxMenu = NULL;
 
 static void CreatePCMainMenu(u8 whichMenu, s16 *windowIdPtr);
@@ -327,6 +328,7 @@ static void Task_PCMainMenu(u8 taskId)
 void ShowPokemonStorageSystemPC(void)
 {
     u8 taskId = CreateTask(Task_PCMainMenu, 80);
+    sStorageOpenedFromStartMenu = FALSE;
     gTasks[taskId].tState = STATE_LOAD;
     gTasks[taskId].tSelectedOption = 0;
     LockPlayerFieldControls();
@@ -366,8 +368,20 @@ static void CreatePCMainMenu(u8 whichMenu, s16 *windowIdPtr)
     *windowIdPtr = windowId;
 }
 
+void CB2_OpenPokemonStorageFromStartMenu(void)
+{
+    sStorageOpenedFromStartMenu = TRUE;
+    EnterPokeStorage(OPTION_MOVE_MONS);
+}
+
 void CB2_ExitPokeStorage(void)
 {
+    if (sStorageOpenedFromStartMenu)
+    {
+        sStorageOpenedFromStartMenu = FALSE;
+        SetMainCallback2(CB2_ReturnToFieldWithOpenMenu);
+        return;
+    }
     sPreviousBoxOption = GetCurrentBoxOption();
     gFieldCallback = FieldTask_ReturnToPcMenu;
     SetMainCallback2(CB2_ReturnToField);

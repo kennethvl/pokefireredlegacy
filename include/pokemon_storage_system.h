@@ -56,6 +56,7 @@ s16 CompactPartySlots(void);
 u32 GetBoxMonDataAt(u8 boxId, u8 monPosition, s32 request);
 void ZeroBoxMonAt(u8 boxId, u8 monPosition);
 void CB2_ReturnToPokeStorage(void);
+void CB2_OpenPokemonStorageFromStartMenu(void);
 void ResetPokemonStorageSystem(void);
 u8 StorageGetCurrentBox(void);
 void DrawTextWindowAndBufferTiles(const u8 *string, void *dst, u8 zero1, u8 zero2, u8 *buffer, s32 bytesToBuffer);

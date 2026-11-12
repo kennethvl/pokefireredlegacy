@@ -6,6 +6,7 @@
 #include "pokedex.h"
 #include "item_menu.h"
 #include "party_menu.h"
+#include "pokemon_storage_system.h"
 #include "save.h"
 #include "link_rfu.h"
 #include "help_message.h"
@@ -35,6 +36,7 @@
 #include "save_menu_util.h"
 #include "help_system.h"
 #include "constants/songs.h"
+#include "constants/maps.h"
 #include "constants/field_weather.h"
 
 enum StartMenuOption
@@ -48,6 +50,7 @@ enum StartMenuOption
     STARTMENU_EXIT,
     STARTMENU_RETIRE,
     STARTMENU_PLAYER2,
+    STARTMENU_STORAGE,
     MAX_STARTMENU_ITEMS
 };
 
@@ -80,6 +83,10 @@ static void StartMenu_FadeScreenIfLeavingOverworld(void);
 static bool8 StartMenuPokedexSanityCheck(void);
 static bool8 StartMenuPokedexCallback(void);
 static bool8 StartMenuPokemonCallback(void);
+static bool8 StartMenuStorageCallback(void);
+static bool8 CanAccessPokemonStorage(void);
+static u8 GetStartMenuFont(void);
+static u8 GetStartMenuRowHeight(void);
 static bool8 StartMenuBagCallback(void);
 static bool8 StartMenuPlayerCallback(void);
 static bool8 StartMenuSaveCallback(void);
@@ -121,7 +128,8 @@ static const struct MenuAction sStartMenuActionTable[] = {
     { gText_MenuOption, {.u8_void = StartMenuOptionCallback} },
     { gText_MenuExit, {.u8_void = StartMenuExitCallback} },
     { gText_MenuRetire, {.u8_void = StartMenuSafariZoneRetireCallback} },
-    { gText_MenuPlayer, {.u8_void = StartMenuLinkPlayerCallback} }
+    { gText_MenuPlayer, {.u8_void = StartMenuLinkPlayerCallback} },
+    { gText_MenuStorage, {.u8_void = StartMenuStorageCallback} }
 };
 
 static const struct WindowTemplate sSafariZoneStatsWindowTemplate = {
@@ -143,7 +151,8 @@ static const u8 *const sStartMenuDescPointers[] = {
     gStartMenuDesc_Option,
     gStartMenuDesc_Exit,
     gStartMenuDesc_Retire,
-    gStartMenuDesc_Player
+    gStartMenuDesc_Player,
+    gStartMenuDesc_Storage
 };
 
 static const struct BgTemplate sBGTemplates_AfterLinkSaveMessage[] = {
@@ -202,6 +211,8 @@ static void SetUpStartMenu(void)
         SetUpStartMenu_SafariZone();
     else
         SetUpStartMenu_NormalField();
+    if (sStartMenuCursorPos >= sNumStartMenuItems)
+        sStartMenuCursorPos = sNumStartMenuItems - 1;
 }
 
 static void AppendToStartMenuItems(u8 newEntry)
@@ -209,12 +220,33 @@ static void AppendToStartMenuItems(u8 newEntry)
     AppendToList(sStartMenuOrder, &sNumStartMenuItems, newEntry);
 }
 
+static bool8 CanAccessPokemonStorage(void)
+{
+    u16 map = (gSaveBlock1Ptr->location.mapGroup << 8) | gSaveBlock1Ptr->location.mapNum;
+
+    switch (map)
+    {
+    case MAP_POKEMON_LEAGUE_LORELEIS_ROOM:
+    case MAP_POKEMON_LEAGUE_BRUNOS_ROOM:
+    case MAP_POKEMON_LEAGUE_AGATHAS_ROOM:
+    case MAP_POKEMON_LEAGUE_LANCES_ROOM:
+    case MAP_POKEMON_LEAGUE_CHAMPIONS_ROOM:
+        return FALSE;
+    default:
+        return TRUE;
+    }
+}
+
 static void SetUpStartMenu_NormalField(void)
 {
     if (FlagGet(FLAG_SYS_POKEDEX_GET) == TRUE)
         AppendToStartMenuItems(STARTMENU_POKEDEX);
     if (FlagGet(FLAG_SYS_POKEMON_GET) == TRUE)
+    {
         AppendToStartMenuItems(STARTMENU_POKEMON);
+        if (CanAccessPokemonStorage())
+            AppendToStartMenuItems(STARTMENU_STORAGE);
+    }
     AppendToStartMenuItems(STARTMENU_BAG);
     AppendToStartMenuItems(STARTMENU_PLAYER);
     AppendToStartMenuItems(STARTMENU_SAVE);
@@ -227,6 +259,8 @@ static void SetUpStartMenu_SafariZone(void)
     AppendToStartMenuItems(STARTMENU_RETIRE);
     AppendToStartMenuItems(STARTMENU_POKEDEX);
     AppendToStartMenuItems(STARTMENU_POKEMON);
+    if (CanAccessPokemonStorage())
+        AppendToStartMenuItems(STARTMENU_STORAGE);
     AppendToStartMenuItems(STARTMENU_BAG);
     AppendToStartMenuItems(STARTMENU_PLAYER);
     AppendToStartMenuItems(STARTMENU_OPTION);
@@ -272,19 +306,31 @@ static void DestroySafariZoneStatsWindow(void)
     }
 }
 
+// Eight entries fit above the help panel using the small font's 13-pixel glyphs.
+static u8 GetStartMenuFont(void)
+{
+    return sNumStartMenuItems > 7 ? FONT_SMALL : FONT_NORMAL;
+}
+
+static u8 GetStartMenuRowHeight(void)
+{
+    return sNumStartMenuItems > 7 ? 13 : 15;
+}
+
 static s8 PrintStartMenuItems(s8 *cursor_p, u8 nitems)
 {
     s16 i = *cursor_p;
     do
     {
-        if (sStartMenuOrder[i] == STARTMENU_PLAYER || sStartMenuOrder[i] == STARTMENU_PLAYER2)
+        if (GetStartMenuFont() == FONT_NORMAL
+         && (sStartMenuOrder[i] == STARTMENU_PLAYER || sStartMenuOrder[i] == STARTMENU_PLAYER2))
         {
-            Menu_PrintFormatIntlPlayerName(GetStartMenuWindowId(), sStartMenuActionTable[sStartMenuOrder[i]].text, 8, i * 15);
+            Menu_PrintFormatIntlPlayerName(GetStartMenuWindowId(), sStartMenuActionTable[sStartMenuOrder[i]].text, 8, i * GetStartMenuRowHeight());
         }
         else
         {
             StringExpandPlaceholders(gStringVar4, sStartMenuActionTable[sStartMenuOrder[i]].text);
-            AddTextPrinterParameterized(GetStartMenuWindowId(), FONT_NORMAL, gStringVar4, 8, i * 15, 0xFF, NULL);
+            AddTextPrinterParameterized(GetStartMenuWindowId(), GetStartMenuFont(), gStringVar4, 8, i * GetStartMenuRowHeight(), 0xFF, NULL);
         }
         i++;
         if (i >= sNumStartMenuItems)
@@ -310,7 +356,7 @@ static s8 DoDrawStartMenu(void)
         break;
     case 2:
         LoadStdWindowFrameGfx();
-        DrawStdWindowFrame(CreateStartMenuWindow(sNumStartMenuItems), FALSE);
+        DrawStdWindowFrame(CreateStartMenuWindow(min(sNumStartMenuItems, 7)), FALSE);
         sDrawStartMenuState[0]++;
         break;
     case 3:
@@ -323,7 +369,7 @@ static s8 DoDrawStartMenu(void)
             sDrawStartMenuState[0]++;
         break;
     case 5:
-        sStartMenuCursorPos = Menu_InitCursor(GetStartMenuWindowId(), FONT_NORMAL, 0, 0, 15, sNumStartMenuItems, sStartMenuCursorPos);
+        sStartMenuCursorPos = Menu_InitCursor(GetStartMenuWindowId(), GetStartMenuFont(), 0, 0, GetStartMenuRowHeight(), sNumStartMenuItems, sStartMenuCursorPos);
         if (!MenuHelpers_IsLinkActive() && InUnionRoom() != TRUE && gSaveBlock2Ptr->optionsButtonMode == OPTIONS_BUTTON_MODE_HELP)
         {
             DrawHelpMessageWindowWithText(sStartMenuDescPointers[sStartMenuOrder[sStartMenuCursorPos]]);
@@ -481,6 +527,19 @@ static bool8 StartMenuPokemonCallback(void)
         DestroySafariZoneStatsWindow();
         CleanupOverworldWindowsAndTilemaps();
         SetMainCallback2(CB2_PartyMenuFromStartMenu);
+        return TRUE;
+    }
+    return FALSE;
+}
+
+static bool8 StartMenuStorageCallback(void)
+{
+    if (!gPaletteFade.active)
+    {
+        PlayRainStoppingSoundEffect();
+        DestroySafariZoneStatsWindow();
+        CleanupOverworldWindowsAndTilemaps();
+        SetMainCallback2(CB2_OpenPokemonStorageFromStartMenu);
         return TRUE;
     }
     return FALSE;
