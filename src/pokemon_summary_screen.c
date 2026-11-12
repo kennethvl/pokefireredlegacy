@@ -2705,7 +2705,7 @@ static void PrintNatureArrow(u8 x, u8 y, s8 natureStat)
 
 static void PrintSkillsPage(void)
 {
-    const s8 *natureMod = gNatureStatTable[GetNature(&sMonSummaryScreen->currentMon)];
+    const s8 *natureMod = gNatureStatTable[GetStatNature(&sMonSummaryScreen->currentMon)];
     const u8 natureNeutralColor = 0;
     const u8 natureUpColor = 6;
     const u8 natureDownColor = 7;
@@ -2850,6 +2850,54 @@ static void PokeSum_PrintTrainerMemo(void)
         PokeSum_PrintTrainerMemo_Egg();
 }
 
+static const u8 sText_OriginalNature[] = _("Nature: ");
+static const u8 sText_StatNature[] = _("Stat nature: ");
+static const u8 sText_NatureSeparator[] = _(" / ");
+
+static void PokeSum_PrintNatureMemo(const u8 *memo)
+{
+    u8 statNature = GetStatNature(&sMonSummaryScreen->currentMon);
+    u8 originalNature = GetNature(&sMonSummaryScreen->currentMon);
+    u8 line[80];
+    const u8 *rest = memo;
+    u8 newlines = 0;
+
+    if (statNature == originalNature)
+    {
+        AddTextPrinterParameterized4(sMonSummaryScreen->windowIds[POKESUM_WIN_TRAINER_MEMO], FONT_NORMAL, 0, 3, 0, 0, sLevelNickTextColors[0], TEXT_SKIP_DRAW, memo);
+        return;
+    }
+    while (*rest != EOS)
+    {
+        if (*rest == CHAR_NEWLINE)
+            newlines++;
+        rest++;
+    }
+    if (newlines < 2)
+    {
+        AddTextPrinterParameterized4(sMonSummaryScreen->windowIds[POKESUM_WIN_TRAINER_MEMO], FONT_NORMAL, 0, 3, 0, 0, sLevelNickTextColors[0], TEXT_SKIP_DRAW, memo);
+        StringCopy(line, sText_StatNature);
+        StringAppend(line, gNatureNamePointers[statNature]);
+        AddTextPrinterParameterized4(sMonSummaryScreen->windowIds[POKESUM_WIN_TRAINER_MEMO], FONT_SMALL, 0, 34, 0, 0, sLevelNickTextColors[0], TEXT_SKIP_DRAW, line);
+    }
+    else
+    {
+        // Fit both nature labels above the unchanged two-line origin description.
+        StringCopy(line, sText_OriginalNature);
+        StringAppend(line, gNatureNamePointers[originalNature]);
+        StringAppend(line, sText_NatureSeparator);
+        StringAppend(line, sText_StatNature);
+        StringAppend(line, gNatureNamePointers[statNature]);
+        AddTextPrinterParameterized4(sMonSummaryScreen->windowIds[POKESUM_WIN_TRAINER_MEMO], FONT_SMALL, 0, 3, 0, 0, sLevelNickTextColors[0], TEXT_SKIP_DRAW, line);
+        rest = memo;
+        while (*rest != EOS && *rest != CHAR_NEWLINE)
+            rest++;
+        if (*rest == CHAR_NEWLINE)
+            rest++;
+        AddTextPrinterParameterized4(sMonSummaryScreen->windowIds[POKESUM_WIN_TRAINER_MEMO], FONT_NORMAL, 0, 18, 0, 0, sLevelNickTextColors[0], TEXT_SKIP_DRAW, rest);
+    }
+}
+
 static void PokeSum_PrintTrainerMemo_Mon_HeldByOT(void)
 {
     u8 nature;
@@ -2921,7 +2969,7 @@ static void PokeSum_PrintTrainerMemo_Mon_HeldByOT(void)
         }
     }
 
-    AddTextPrinterParameterized4(sMonSummaryScreen->windowIds[POKESUM_WIN_TRAINER_MEMO], FONT_NORMAL, 0, 3, 0, 0, sLevelNickTextColors[0], TEXT_SKIP_DRAW, natureMetOrHatchedAtLevelStr);
+    PokeSum_PrintNatureMemo(natureMetOrHatchedAtLevelStr);
 }
 
 static void PokeSum_PrintTrainerMemo_Mon_NotHeldByOT(void)
@@ -2970,7 +3018,7 @@ static void PokeSum_PrintTrainerMemo_Mon_NotHeldByOT(void)
                 DynamicPlaceholderTextUtil_ExpandPlaceholders(natureMetOrHatchedAtLevelStr, gText_PokeSum_MetInATrade);
         }
 
-        AddTextPrinterParameterized4(sMonSummaryScreen->windowIds[POKESUM_WIN_TRAINER_MEMO], FONT_NORMAL, 0, 3, 0, 0, sLevelNickTextColors[0], TEXT_SKIP_DRAW, natureMetOrHatchedAtLevelStr);
+        PokeSum_PrintNatureMemo(natureMetOrHatchedAtLevelStr);
         return;
     }
 
@@ -3018,7 +3066,7 @@ static void PokeSum_PrintTrainerMemo_Mon_NotHeldByOT(void)
         }
     }
 
-    AddTextPrinterParameterized4(sMonSummaryScreen->windowIds[POKESUM_WIN_TRAINER_MEMO], FONT_NORMAL, 0, 3, 0, 0, sLevelNickTextColors[0], TEXT_SKIP_DRAW, natureMetOrHatchedAtLevelStr);
+    PokeSum_PrintNatureMemo(natureMetOrHatchedAtLevelStr);
 }
 
 static void PokeSum_PrintTrainerMemo_Mon(void)

@@ -2210,7 +2210,7 @@ static u16 CalculateBoxMonChecksum(struct BoxPokemon *boxMon)
 {                                                               \
     u8 baseStat = gSpeciesInfo[species].base;                   \
     s32 n = (((2 * baseStat + iv + ev / 4) * level) / 100) + 5; \
-    u8 nature = GetNature(mon);                                 \
+    u8 nature = GetStatNature(mon);                             \
     n = ModifyStatByNature(nature, n, statIndex);               \
     SetMonData(mon, field, &n);                                 \
 }
@@ -3515,6 +3515,12 @@ u32 GetBoxMonData(struct BoxPokemon *boxMon, s32 field, u8 *data)
     case MON_DATA_FORME:
         retVal = substruct0->forme;
         break;
+    case MON_DATA_STAT_NATURE:
+        if (substruct0->statNature > 0 && substruct0->statNature <= NUM_NATURES)
+            retVal = substruct0->statNature - 1;
+        else
+            retVal = boxMon->personality % NUM_NATURES;
+        break;
     case MON_DATA_NATURE:
         return boxMon->personality % 25;
         break;
@@ -3575,6 +3581,7 @@ void SetMonData(struct Pokemon *mon, s32 field, const void *dataArg)
         break;
     case MON_DATA_SPECIES_OR_EGG:
         break;
+    case MON_DATA_STAT_NATURE:
     case MON_DATA_NATURE: // Calculate stats after settings
         SetBoxMonData(&mon->box, field, data);
         CalculateMonStats(mon);
@@ -3873,6 +3880,10 @@ void SetBoxMonData(struct BoxPokemon *boxMon, s32 field, const void *dataArg)
         substruct0->forme = forme;
         break;
     }
+    case MON_DATA_STAT_NATURE:
+        if (*data < NUM_NATURES)
+            substruct0->statNature = (*data == boxMon->personality % NUM_NATURES) ? 0 : *data + 1;
+        break;
     case MON_DATA_NATURE:
     {
         u32 pid = boxMon->personality;
@@ -5334,6 +5345,11 @@ u8 GetNature(struct Pokemon *mon)
     return GetMonData(mon, MON_DATA_PERSONALITY, NULL) % NUM_NATURES;
 }
 
+u8 GetStatNature(struct Pokemon *mon)
+{
+    return GetMonData(mon, MON_DATA_STAT_NATURE, NULL);
+}
+
 u8 GetNatureFromPersonality(u32 personality)
 {
     return personality % NUM_NATURES;
@@ -6611,7 +6627,7 @@ static u16 GetDeoxysStat(struct Pokemon *mon, s32 statId)
         ivVal = GetMonData(mon, MON_DATA_HP_IV + statId, NULL);
         evVal = GetMonData(mon, MON_DATA_HP_EV + statId, NULL);
         statValue = ((sDeoxysBaseStats[forme][statId] * 2 + ivVal + evVal / 4) * mon->level) / 100 + 5;
-        nature = GetNature(mon);
+        nature = GetStatNature(mon);
         statValue = ModifyStatByNature(nature, statValue, (u8)statId);
     }
     return statValue;
