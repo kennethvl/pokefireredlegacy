@@ -8675,13 +8675,17 @@ static void Cmd_hiddenpowercalc(void)
               | ((gBattleMons[gBattlerAttacker].spAttackIV & 1) << 4)
               | ((gBattleMons[gBattlerAttacker].spDefenseIV & 1) << 5);
 
-    gDynamicBasePower = (40 * powerBits) / 63 + 30;
+    gDynamicBasePower = (40 * powerBits) / 63 + 80;
 
     // Subtract 3 instead of 1 below because 2 types are excluded (TYPE_NORMAL and TYPE_MYSTERY)
     // The final + 1 skips past Normal, and the following conditional skips TYPE_MYSTERY
     gBattleStruct->dynamicMoveType = ((NUMBER_OF_MON_TYPES - 3) * typeBits) / 63 + 1;
     if (gBattleStruct->dynamicMoveType >= TYPE_MYSTERY)
         gBattleStruct->dynamicMoveType++;
+    if (gBattleMons[gBattlerAttacker].hiddenPowerType > TYPE_NORMAL
+     && gBattleMons[gBattlerAttacker].hiddenPowerType < NUMBER_OF_MON_TYPES
+     && gBattleMons[gBattlerAttacker].hiddenPowerType != TYPE_MYSTERY)
+        gBattleStruct->dynamicMoveType = gBattleMons[gBattlerAttacker].hiddenPowerType;
     gBattleStruct->dynamicMoveType |= F_DYNAMIC_TYPE_1 | F_DYNAMIC_TYPE_2;
 
     gBattlescriptCurrInstr++;

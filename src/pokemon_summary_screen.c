@@ -2430,7 +2430,7 @@ static void BufferMonMoveI(u8 i)
     }
 
     sMonSummaryScreen->numMoves++;
-    showRealHiddenPower = (sMonSummaryScreen->moveIds[i] == MOVE_HIDDEN_POWER && FlagGet(FLAG_SHOW_HIDDEN_POWER));
+    showRealHiddenPower = (sMonSummaryScreen->moveIds[i] == MOVE_HIDDEN_POWER);
     if (showRealHiddenPower)
     {
         struct Pokemon *mon = &sMonSummaryScreen->currentMon;
@@ -2440,15 +2440,10 @@ static void BufferMonMoveI(u8 i)
         u32 speedIv = GetMonData(mon, MON_DATA_SPEED_IV);
         u32 spAtkIv = GetMonData(mon, MON_DATA_SPATK_IV);
         u32 spDefIv = GetMonData(mon, MON_DATA_SPDEF_IV);
-        u32 typeBits = ((hpIv & 1) << 0) | ((atkIv & 1) << 1) | ((defIv & 1) << 2)
-                     | ((speedIv & 1) << 3) | ((spAtkIv & 1) << 4) | ((spDefIv & 1) << 5);
         u32 powerBits = ((hpIv & 2) >> 1) | ((atkIv & 2) << 0) | ((defIv & 2) << 1)
                       | ((speedIv & 2) << 2) | ((spAtkIv & 2) << 3) | ((spDefIv & 2) << 4);
-        u8 type = ((NUMBER_OF_MON_TYPES - 3) * typeBits) / 63 + 1;
-        if (type >= TYPE_MYSTERY)
-            type++;
-        sMonSummaryScreen->moveTypes[i] = type;
-        hiddenPowerPower = (40 * powerBits) / 63 + 30;
+        sMonSummaryScreen->moveTypes[i] = GetMonHiddenPowerType(mon);
+        hiddenPowerPower = (40 * powerBits) / 63 + 80;
     }
     else
     {

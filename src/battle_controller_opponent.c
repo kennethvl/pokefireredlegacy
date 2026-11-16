@@ -473,6 +473,7 @@ static u32 GetOpponentMonData(u8 monId, u8 *dst)
         }
         battleMon.ppBonuses = GetMonData(&gEnemyParty[monId], MON_DATA_PP_BONUSES);
         battleMon.friendship = GetMonData(&gEnemyParty[monId], MON_DATA_FRIENDSHIP);
+        battleMon.hiddenPowerType = GetMonData(&gEnemyParty[monId], MON_DATA_HIDDEN_POWER_TYPE);
         battleMon.experience = GetMonData(&gEnemyParty[monId], MON_DATA_EXP);
         battleMon.hpIV = GetMonData(&gEnemyParty[monId], MON_DATA_HP_IV);
         battleMon.attackIV = GetMonData(&gEnemyParty[monId], MON_DATA_ATK_IV);

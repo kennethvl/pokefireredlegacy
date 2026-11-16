@@ -761,6 +761,7 @@ static u32 CopyPokedudeMonData(u8 monId, u8 *dst)
         }
         battleMon.ppBonuses = GetMonData(mon, MON_DATA_PP_BONUSES);
         battleMon.friendship = GetMonData(mon, MON_DATA_FRIENDSHIP);
+        battleMon.hiddenPowerType = GetMonData(mon, MON_DATA_HIDDEN_POWER_TYPE);
         battleMon.experience = GetMonData(mon, MON_DATA_EXP);
         battleMon.hpIV = GetMonData(mon, MON_DATA_HP_IV);
         battleMon.attackIV = GetMonData(mon, MON_DATA_ATK_IV);

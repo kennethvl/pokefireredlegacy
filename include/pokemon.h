@@ -14,6 +14,7 @@ struct PokemonSubstruct0
     u8 friendship;
     u16 forme:2;
     u16 statNature:5; // 0 = original nature; otherwise selected nature + 1
+    u16 hiddenPowerType:5; // 0 = IV-based type; otherwise a trained type
 };
 
 struct PokemonSubstruct1
@@ -188,7 +189,7 @@ struct BattlePokemon
     /*0x20*/ u8 ability;
     /*0x21*/ u8 type1;
     /*0x22*/ u8 type2;
-    /*0x23*/ u8 unknown;
+    /*0x23*/ u8 hiddenPowerType;
     /*0x24*/ u8 pp[MAX_MON_MOVES];
     /*0x28*/ u16 hp;
     /*0x2A*/ u8 level;
@@ -374,6 +375,7 @@ u8 GetItemEffectParamOffset(u16 itemId, u8 effectByte, u8 effectBit);
 const u8 *Battle_PrintStatBoosterEffectMessage(u16 itemId);
 u8 GetNature(struct Pokemon *mon);
 u8 GetStatNature(struct Pokemon *mon);
+u8 GetMonHiddenPowerType(struct Pokemon *mon);
 u16 GetEvolutionTargetSpecies(struct Pokemon *mon, u8 type, u16 evolutionItem);
 u16 NationalPokedexNumToSpecies(u16 nationalNum);
 u16 SpeciesToNationalPokedexNum(u16 species);

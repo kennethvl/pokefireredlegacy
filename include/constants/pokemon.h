@@ -96,6 +96,7 @@
 #define MON_DATA_NATURE                   91
 #define MON_DATA_HIDDEN_NATURE            92
 #define MON_DATA_STAT_NATURE              93
+#define MON_DATA_HIDDEN_POWER_TYPE        94
 
 
 #define BEST_IV_SPREAD_HIDDEN_POWER_BUG      {31, 31, 31, 30, 31, 30}

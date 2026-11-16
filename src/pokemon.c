@@ -3521,6 +3521,12 @@ u32 GetBoxMonData(struct BoxPokemon *boxMon, s32 field, u8 *data)
         else
             retVal = boxMon->personality % NUM_NATURES;
         break;
+    case MON_DATA_HIDDEN_POWER_TYPE:
+        if (substruct0->hiddenPowerType > TYPE_NORMAL
+         && substruct0->hiddenPowerType < NUMBER_OF_MON_TYPES
+         && substruct0->hiddenPowerType != TYPE_MYSTERY)
+            retVal = substruct0->hiddenPowerType;
+        break;
     case MON_DATA_NATURE:
         return boxMon->personality % 25;
         break;
@@ -3884,6 +3890,10 @@ void SetBoxMonData(struct BoxPokemon *boxMon, s32 field, const void *dataArg)
         if (*data < NUM_NATURES)
             substruct0->statNature = (*data == boxMon->personality % NUM_NATURES) ? 0 : *data + 1;
         break;
+    case MON_DATA_HIDDEN_POWER_TYPE:
+        if (*data < NUMBER_OF_MON_TYPES && *data != TYPE_MYSTERY)
+            substruct0->hiddenPowerType = *data;
+        break;
     case MON_DATA_NATURE:
     {
         u32 pid = boxMon->personality;
@@ -4223,6 +4233,7 @@ static void CopyPlayerPartyMonToBattleData(u8 battlerId, u8 partyIndex)
     gBattleMons[battlerId].ppBonuses = GetMonData(&gPlayerParty[partyIndex], MON_DATA_PP_BONUSES, NULL);
     gBattleMons[battlerId].friendship = GetMonData(&gPlayerParty[partyIndex], MON_DATA_FRIENDSHIP, NULL);
     gBattleMons[battlerId].experience = GetMonData(&gPlayerParty[partyIndex], MON_DATA_EXP, NULL);
+    gBattleMons[battlerId].hiddenPowerType = GetMonData(&gPlayerParty[partyIndex], MON_DATA_HIDDEN_POWER_TYPE, NULL);
     gBattleMons[battlerId].hpIV = GetMonData(&gPlayerParty[partyIndex], MON_DATA_HP_IV, NULL);
     gBattleMons[battlerId].attackIV = GetMonData(&gPlayerParty[partyIndex], MON_DATA_ATK_IV, NULL);
     gBattleMons[battlerId].defenseIV = GetMonData(&gPlayerParty[partyIndex], MON_DATA_DEF_IV, NULL);
@@ -5348,6 +5359,25 @@ u8 GetNature(struct Pokemon *mon)
 u8 GetStatNature(struct Pokemon *mon)
 {
     return GetMonData(mon, MON_DATA_STAT_NATURE, NULL);
+}
+
+u8 GetMonHiddenPowerType(struct Pokemon *mon)
+{
+    u8 type = GetMonData(mon, MON_DATA_HIDDEN_POWER_TYPE);
+    u32 bits;
+
+    if (type != TYPE_NORMAL)
+        return type;
+    bits = (GetMonData(mon, MON_DATA_HP_IV) & 1)
+         | ((GetMonData(mon, MON_DATA_ATK_IV) & 1) << 1)
+         | ((GetMonData(mon, MON_DATA_DEF_IV) & 1) << 2)
+         | ((GetMonData(mon, MON_DATA_SPEED_IV) & 1) << 3)
+         | ((GetMonData(mon, MON_DATA_SPATK_IV) & 1) << 4)
+         | ((GetMonData(mon, MON_DATA_SPDEF_IV) & 1) << 5);
+    type = ((NUMBER_OF_MON_TYPES - 3) * bits) / 63 + 1;
+    if (type >= TYPE_MYSTERY)
+        type++;
+    return type;
 }
 
 u8 GetNatureFromPersonality(u32 personality)
