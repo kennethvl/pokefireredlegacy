@@ -5840,7 +5840,7 @@
       "price": 0,
       "holdEffect": "HOLD_EFFECT_NONE",
       "holdEffectParam": 0,
-      "description_english": "A very convenient map that can be\\nviewed anytime. It even shows your \\npresent location.",
+      "description_english": "A map of your current region.\\nWith the THUNDERBADGE, travel to\\npreviously visited towns.",
       "importance": 1,
       "registrability": 1,
       "pocket": "POCKET_KEY_ITEMS",

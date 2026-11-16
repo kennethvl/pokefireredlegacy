@@ -8,6 +8,9 @@
 #include "region_map.h"
 #include "party_menu.h"
 #include "field_effect.h"
+#include "field_fadetransition.h"
+#include "link.h"
+#include "menu_helpers.h"
 #include "new_menu_helpers.h"
 #include "menu.h"
 #include "strings.h"
@@ -275,6 +278,8 @@ struct FlyMap
     u8 state;
     u8 unused; // Never read
     bool8 selectedDestination;
+    bool8 fromTownMap;
+    MainCallback exitCallback;
 };
 
 static EWRAM_DATA struct RegionMap * sRegionMap = NULL;
@@ -3879,6 +3884,22 @@ void CB2_OpenFlyMap(void)
     InitRegionMap(REGIONMAP_TYPE_FLY);
 }
 
+void InitTownMapWithExitCB(MainCallback callback)
+{
+    if (FlagGet(FLAG_BADGE03_GET)
+     && Overworld_MapTypeAllowsTeleportAndFly(gMapHeader.mapType)
+     && !MenuHelpers_IsLinkActive()
+     && !InUnionRoom())
+    {
+        InitFlyMap();
+        sFlyMap->fromTownMap = TRUE;
+        sFlyMap->exitCallback = callback;
+        InitRegionMapWithExitCB(REGIONMAP_TYPE_FLY, callback);
+    }
+    else
+        InitRegionMapWithExitCB(REGIONMAP_TYPE_NORMAL, callback);
+}
+
 static void Task_FlyMap(u8 taskId)
 {
     switch (sFlyMap->state)
@@ -4016,8 +4037,18 @@ static void FreeFlyMap(u8 taskId)
     FreeRegionMapForFlyMap();
     DestroyTask(taskId);
     FreeAllWindowBuffers();
-    if (sFlyMap->selectedDestination == TRUE)
+    if (sFlyMap->selectedDestination && sFlyMap->fromTownMap)
+    {
+        Overworld_ResetStateAfterFly();
+        WarpIntoMap();
+        gFieldCallback2 = NULL;
+        gFieldCallback = FieldCB_DefaultWarpExit;
+        SetMainCallback2(CB2_LoadMap);
+    }
+    else if (sFlyMap->selectedDestination == TRUE)
         SetMainCallback2(CB2_ReturnToField);
+    else if (sFlyMap->fromTownMap)
+        SetMainCallback2(sFlyMap->exitCallback);
     else
         SetMainCallback2(CB2_ReturnToPartyMenuFromFlyMap);
     FREE_IF_NOT_NULL(sFlyMap);
@@ -4029,11 +4060,13 @@ static void SetFlyWarpDestination(u16 mapsec)
     if (sMapFlyDestinations[idx][2])
     {
         SetWarpDestinationToHealLocation(sMapFlyDestinations[idx][2]);
-        SetUsedFlyQuestLogEvent(sMapFlyDestinations[idx]);
+        if (!sFlyMap->fromTownMap)
+            SetUsedFlyQuestLogEvent(sMapFlyDestinations[idx]);
     }
     else
     {
         SetWarpDestinationToMapWarp(sMapFlyDestinations[idx][0], sMapFlyDestinations[idx][1], -1);
     }
-    ReturnToFieldFromFlyMapSelect();
+    if (!sFlyMap->fromTownMap)
+        ReturnToFieldFromFlyMapSelect();
 }

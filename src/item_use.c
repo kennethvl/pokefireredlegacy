@@ -689,7 +689,7 @@ void FieldUseFunc_TownMap(u8 taskId)
 
 static void UseTownMapFromBag(void)
 {
-    InitRegionMapWithExitCB(REGIONMAP_TYPE_NORMAL, CB2_BagMenuFromStartMenu);
+    InitTownMapWithExitCB(CB2_BagMenuFromStartMenu);
 }
 
 static void Task_UseTownMapFromField(u8 taskId)
@@ -698,7 +698,7 @@ static void Task_UseTownMapFromField(u8 taskId)
     {
         CleanupOverworldWindowsAndTilemaps();
         SetFieldCallback2ForItemUse();
-        InitRegionMapWithExitCB(REGIONMAP_TYPE_NORMAL, CB2_ReturnToField);
+        InitTownMapWithExitCB(CB2_ReturnToField);
         DestroyTask(taskId);
     }
 }
