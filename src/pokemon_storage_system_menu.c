@@ -374,6 +374,12 @@ void CB2_OpenPokemonStorageFromStartMenu(void)
     EnterPokeStorage(OPTION_MOVE_MONS);
 }
 
+void CB2_OpenPokemonStorageItemsFromStartMenu(void)
+{
+    sStorageOpenedFromStartMenu = TRUE;
+    EnterPokeStorage(OPTION_MOVE_ITEMS);
+}
+
 void CB2_ExitPokeStorage(void)
 {
     if (sStorageOpenedFromStartMenu)

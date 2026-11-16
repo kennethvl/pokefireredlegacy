@@ -64,6 +64,8 @@ enum SaveCBReturn
 
 static EWRAM_DATA bool8 (*sStartMenuCallback)(void) = NULL;
 static EWRAM_DATA u8 sStartMenuCursorPos = 0;
+static EWRAM_DATA bool8 sStorageMoveItems = FALSE;
+static const u8 sText_ItemStorage[] = _("ITEM BOX");
 static EWRAM_DATA u8 sNumStartMenuItems = 0;
 static EWRAM_DATA u8 sStartMenuOrder[MAX_STARTMENU_ITEMS] = {};
 static EWRAM_DATA s8 sDrawStartMenuState[2] = {};
@@ -329,7 +331,10 @@ static s8 PrintStartMenuItems(s8 *cursor_p, u8 nitems)
         }
         else
         {
-            StringExpandPlaceholders(gStringVar4, sStartMenuActionTable[sStartMenuOrder[i]].text);
+            if (sStartMenuOrder[i] == STARTMENU_STORAGE && sStorageMoveItems)
+                StringCopy(gStringVar4, sText_ItemStorage);
+            else
+                StringExpandPlaceholders(gStringVar4, sStartMenuActionTable[sStartMenuOrder[i]].text);
             AddTextPrinterParameterized(GetStartMenuWindowId(), GetStartMenuFont(), gStringVar4, 8, i * GetStartMenuRowHeight(), 0xFF, NULL);
         }
         i++;
@@ -450,6 +455,19 @@ void ShowStartMenu(void)
 
 static bool8 StartCB_HandleInput(void)
 {
+    if (JOY_NEW(SELECT_BUTTON) && sStartMenuOrder[sStartMenuCursorPos] == STARTMENU_STORAGE)
+    {
+        s8 cursor = sStartMenuCursorPos;
+        u8 windowId = GetStartMenuWindowId();
+
+        sStorageMoveItems = !sStorageMoveItems;
+        PlaySE(SE_SELECT);
+        FillWindowPixelRect(windowId, PIXEL_FILL(1), 8, sStartMenuCursorPos * GetStartMenuRowHeight(),
+                            GetWindowAttribute(windowId, WINDOW_WIDTH) * 8 - 8, GetStartMenuRowHeight());
+        PrintStartMenuItems(&cursor, 1);
+        CopyWindowToVram(windowId, COPYWIN_GFX);
+        return FALSE;
+    }
     if (JOY_NEW(DPAD_UP))
     {
         PlaySE(SE_SELECT);
@@ -539,7 +557,7 @@ static bool8 StartMenuStorageCallback(void)
         PlayRainStoppingSoundEffect();
         DestroySafariZoneStatsWindow();
         CleanupOverworldWindowsAndTilemaps();
-        SetMainCallback2(CB2_OpenPokemonStorageFromStartMenu);
+        SetMainCallback2(sStorageMoveItems ? CB2_OpenPokemonStorageItemsFromStartMenu : CB2_OpenPokemonStorageFromStartMenu);
         return TRUE;
     }
     return FALSE;
