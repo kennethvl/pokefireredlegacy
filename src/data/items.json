@@ -547,7 +547,7 @@
     {
       "english": "ETHER",
       "itemId": "ITEM_ETHER",
-      "price": 800,
+      "price": 80,
       "holdEffect": "HOLD_EFFECT_NONE",
       "holdEffectParam": 10,
       "description_english": "Restores a selected move's PP by\\n10 points for one POKéMON.",
@@ -563,7 +563,7 @@
     {
       "english": "MAX ETHER",
       "itemId": "ITEM_MAX_ETHER",
-      "price": 1600,
+      "price": 160,
       "holdEffect": "HOLD_EFFECT_NONE",
       "holdEffectParam": 255,
       "description_english": "Fully restores a selected move's PP\\nfor one POKéMON.",
@@ -579,7 +579,7 @@
     {
       "english": "ELIXIR",
       "itemId": "ITEM_ELIXIR",
-      "price": 2000,
+      "price": 200,
       "holdEffect": "HOLD_EFFECT_NONE",
       "holdEffectParam": 10,
       "description_english": "Restores the PP of all moves for\\none POKéMON by 10 points each.",
@@ -595,7 +595,7 @@
     {
       "english": "MAX ELIXIR",
       "itemId": "ITEM_MAX_ELIXIR",
-      "price": 4000,
+      "price": 400,
       "holdEffect": "HOLD_EFFECT_NONE",
       "holdEffectParam": 255,
       "description_english": "Fully restores the PP of all moves\\nfor one POKéMON.",
@@ -1331,7 +1331,7 @@
     {
       "english": "SUPER REPEL",
       "itemId": "ITEM_SUPER_REPEL",
-      "price": 200,
+      "price": 20,
       "holdEffect": "HOLD_EFFECT_NONE",
       "holdEffectParam": 200,
       "description_english": "Prevents weak wild POKéMON from\\nappearing for 200 steps.",
@@ -1347,7 +1347,7 @@
     {
       "english": "MAX REPEL",
       "itemId": "ITEM_MAX_REPEL",
-      "price": 250,
+      "price": 25,
       "holdEffect": "HOLD_EFFECT_NONE",
       "holdEffectParam": 250,
       "description_english": "Prevents weak wild POKéMON from\\nappearing for 250 steps.",
@@ -1379,7 +1379,7 @@
     {
       "english": "REPEL",
       "itemId": "ITEM_REPEL",
-      "price": 100,
+      "price": 10,
       "holdEffect": "HOLD_EFFECT_NONE",
       "holdEffectParam": 100,
       "description_english": "Prevents weak wild POKéMON from\\nappearing for 100 steps.",
