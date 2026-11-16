@@ -404,6 +404,10 @@ static void CB2_UseEvolutionStone(void);
 static bool8 MonCanEvolve(void);
 static u16 ItemEffectToMonEv(struct Pokemon *mon, u8 effectType);
 static void ItemEffectToStatString(u8 effectType, u8 *dest);
+static void BufferEvChangeMessage(struct Pokemon *mon, u8 effectType, u16 before, u16 after);
+static bool8 IsEvQuantityItem(u16 item);
+static void StartEvItemQuantityPrompt(u8 taskId);
+static void Task_SelectEvItemQuantity(u8 taskId);
 static void Task_WaitRareCandyMessage(u8 taskId);
 //static bool8 CanMonLearnFieldMove(struct Pokemon *mon, u16 species, u16 move);
 //static bool8 IsFieldMoveTriggeredFromOverworld(u16 move);
@@ -1177,6 +1181,11 @@ static void HandleChooseMonSelection(u8 taskId, s8 *slotPtr)
         case PARTY_ACTION_USE_ITEM:
             if (IsSelectedMonNotEgg((u8 *)slotPtr))
             {
+                if (gPartyMenu.menuType == PARTY_MENU_TYPE_FIELD && IsEvQuantityItem(gSpecialVar_ItemId))
+                {
+                    StartEvItemQuantityPrompt(taskId);
+                    break;
+                }
                 if (gPartyMenu.menuType == PARTY_MENU_TYPE_IN_BATTLE)
                     sPartyMenuInternal->exitCallback = CB2_SetUpExitToBattleScreen;
                 gItemUseCB(taskId, Task_ClosePartyMenuAfterText);
@@ -4593,7 +4602,10 @@ void ItemUseCB_Medicine(u8 taskId, TaskFunc func)
         else
             DisplayPartyMenuMessage(gText_WontHaveEffect, TRUE);        
         ScheduleBgCopyTilemapToVram(2);
-        gTasks[taskId].func = func;
+        if (gPartyMenu.menuType == PARTY_MENU_TYPE_FIELD)
+            gTasks[taskId].func = Task_ReturnToChooseMonAfterText;
+        else
+            gTasks[taskId].func = func;
     }
     else
     {
@@ -4606,6 +4618,9 @@ void ItemUseCB_MedicineStep(u8 taskId, TaskFunc func)
     u16 hp = 0;
     struct Pokemon *mon = &gPlayerParty[gPartyMenu.slotId];
     u16 item = gSpecialVar_ItemId;
+    u8 effectType = GetItemEffectType(item);
+    u16 oldEv = ItemEffectToMonEv(mon, effectType);
+    u16 newEv;
     bool8 canHeal;
     bool8 cannotHeal;
 
@@ -4668,7 +4683,11 @@ void ItemUseCB_MedicineStep(u8 taskId, TaskFunc func)
         else
         {
             GetMonNickname(mon, gStringVar1);
-            GetMedicineItemEffectMessage(item);
+            newEv = ItemEffectToMonEv(mon, effectType);
+            if (newEv > oldEv)
+                BufferEvChangeMessage(mon, effectType, oldEv, newEv);
+            else
+                GetMedicineItemEffectMessage(item);
             DisplayPartyMenuMessage(gStringVar4, TRUE);
             ScheduleBgCopyTilemapToVram(2);
             if (gPartyMenu.menuType == PARTY_MENU_TYPE_FIELD && CheckBagHasItem(item, 1))
@@ -4828,7 +4847,15 @@ static void ItemUseCB_RestorePP(u8 taskId, TaskFunc func)
     GetMedicineItemEffectMessage(gSpecialVar_ItemId);
     DisplayPartyMenuMessage(gStringVar4, 1);
     ScheduleBgCopyTilemapToVram(2);
-    gTasks[taskId].func = Task_ClosePartyMenuAfterText;
+    if (gPartyMenu.menuType == PARTY_MENU_TYPE_FIELD && CheckBagHasItem(gSpecialVar_ItemId, 1))
+    {
+        gPartyMenu.action = PARTY_ACTION_USE_ITEM;
+        sPartyMenuInternal->exitCallback = NULL;
+        gItemUseCB = ItemUseCB_TryRestorePP;
+        gTasks[taskId].func = Task_ReturnToChooseMonAfterText;
+    }
+    else
+        gTasks[taskId].func = Task_ClosePartyMenuAfterText;
 }
 
 static void TryUsePPItemInBattle(u8 taskId)
@@ -6596,7 +6623,10 @@ void ItemUseCB_ReduceEV(u8 taskId, TaskFunc task)
         PlaySE(SE_SELECT);
         DisplayPartyMenuMessage(gText_WontHaveEffect, TRUE);
         ScheduleBgCopyTilemapToVram(2);
-        gTasks[taskId].func = task;
+        if (gPartyMenu.menuType == PARTY_MENU_TYPE_FIELD)
+            gTasks[taskId].func = Task_ReturnToChooseMonAfterText;
+        else
+            gTasks[taskId].func = task;
     }
     else //can use effect, restore old ev, friendship, hp
     {
@@ -6656,21 +6686,153 @@ void ItemUseCB_ReduceEV2(u8 taskId, TaskFunc task)
         RemoveBagItem(item, 1);
         GetMonNickname(mon, gStringVar1);
         ItemEffectToStatString(effectType, gStringVar2);
-        if (friendship != newFriendship)
-        {
-            if (ev != newEv)
-                StringExpandPlaceholders(gStringVar4, gText_PkmnFriendlyBaseVar2Fell);
-            else
-                StringExpandPlaceholders(gStringVar4, gText_PkmnFriendlyBaseVar2CantFall);
-        }
+        if (ev != newEv)
+            BufferEvChangeMessage(mon, effectType, ev, newEv);
         else
-        {
-            StringExpandPlaceholders(gStringVar4, gText_PkmnAdoresBaseVar2Fell);
-        }
+            StringExpandPlaceholders(gStringVar4, gText_PkmnFriendlyBaseVar2CantFall);
         DisplayPartyMenuMessage(gStringVar4, TRUE);
         ScheduleBgCopyTilemapToVram(2);
         gTasks[taskId].func = task;
     }
+
+    if (gPartyMenu.menuType == PARTY_MENU_TYPE_FIELD && CheckBagHasItem(item, 1))
+    {
+        gPartyMenu.action = PARTY_ACTION_USE_ITEM;
+        sPartyMenuInternal->exitCallback = NULL;
+        gItemUseCB = ItemUseCB_ReduceEV;
+        gTasks[taskId].func = Task_ReturnToChooseMonAfterText;
+    }
+}
+
+static EWRAM_DATA s16 sEvItemQuantity = 0;
+static EWRAM_DATA u16 sEvItemMaxQuantity = 0;
+
+static bool8 IsEvQuantityItem(u16 item)
+{
+    return (item >= ITEM_HP_UP && item <= ITEM_CALCIUM)
+        || item == ITEM_ZINC
+        || (item >= ITEM_POMEG_BERRY && item <= ITEM_TAMATO_BERRY);
+}
+
+static void PrintEvItemQuantityPrompt(void)
+{
+    static const u8 sText_Quantity[] = _("Use how many? {STR_VAR_1}/{STR_VAR_2}\nUP/DOWN: 1  LEFT/RIGHT: 10");
+
+    ConvertIntToDecimalStringN(gStringVar1, sEvItemQuantity, STR_CONV_MODE_LEFT_ALIGN, 3);
+    ConvertIntToDecimalStringN(gStringVar2, sEvItemMaxQuantity, STR_CONV_MODE_LEFT_ALIGN, 3);
+    StringExpandPlaceholders(gStringVar4, sText_Quantity);
+    DrawStdFrameWithCustomTileAndPalette(6, FALSE, 0x4F, 13);
+    AddTextPrinterParameterized2(6, FONT_NORMAL, gStringVar4, 0, 0, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRAY);
+    ScheduleBgCopyTilemapToVram(2);
+}
+
+static void StartEvItemQuantityPrompt(u8 taskId)
+{
+    struct Pokemon preview = gPlayerParty[gPartyMenu.slotId];
+    u16 item = gSpecialVar_ItemId;
+    u16 stock = BagGetQuantityByItemId(item);
+    u8 effectType = GetItemEffectType(item);
+    u16 ev;
+    u8 activeBattler = gActiveBattler;
+    u8 potentialBattler = gPotentialItemEffectBattler;
+
+    sEvItemMaxQuantity = 0;
+    // Preview the real effects on a copy, including partial changes at EV caps.
+    if (!(item < ITEM_POMEG_BERRY && FlagGet(FLAG_NUZLOCKE) && GetMonData(&preview, MON_DATA_DEAD)))
+    {
+        while (sEvItemMaxQuantity < stock)
+        {
+            ev = ItemEffectToMonEv(&preview, effectType);
+            if (ExecuteTableBasedItemEffect(&preview, item, gPartyMenu.slotId, 0)
+             || ItemEffectToMonEv(&preview, effectType) == ev)
+                break;
+            sEvItemMaxQuantity++;
+        }
+    }
+    gActiveBattler = activeBattler;
+    gPotentialItemEffectBattler = potentialBattler;
+
+    PlaySE(SE_SELECT);
+    if (sEvItemMaxQuantity == 0)
+    {
+        gPartyMenuUseExitCallback = FALSE;
+        DisplayPartyMenuMessage(gText_WontHaveEffect, TRUE);
+        ScheduleBgCopyTilemapToVram(2);
+        gTasks[taskId].func = Task_ReturnToChooseMonAfterText;
+        return;
+    }
+    sEvItemQuantity = 1;
+    PrintEvItemQuantityPrompt();
+    gTasks[taskId].func = Task_SelectEvItemQuantity;
+}
+
+static void Task_SelectEvItemQuantity(u8 taskId)
+{
+    struct Pokemon *mon = &gPlayerParty[gPartyMenu.slotId];
+    u16 item = gSpecialVar_ItemId;
+    u8 effectType = GetItemEffectType(item);
+    u16 before;
+    u16 used;
+
+    if (AdjustQuantityAccordingToDPadInput(&sEvItemQuantity, sEvItemMaxQuantity))
+    {
+        PrintEvItemQuantityPrompt();
+        return;
+    }
+    if (JOY_NEW(B_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        gTasks[taskId].func = Task_ReturnToChooseMonAfterText;
+        return;
+    }
+    if (!JOY_NEW(A_BUTTON))
+        return;
+
+    before = ItemEffectToMonEv(mon, effectType);
+    for (used = 0; used < sEvItemQuantity && CheckBagHasItem(item, 1); used++)
+    {
+        if (ExecuteTableBasedItemEffect_(gPartyMenu.slotId, item, 0))
+            break;
+        RemoveBagItem(item, 1);
+    }
+    gPartyMenuUseExitCallback = used != 0;
+    if (used != 0)
+    {
+        PlaySE(SE_USE_ITEM);
+        ItemUse_SetQuestLogEvent(QL_EVENT_USED_ITEM, mon, item, 0xFFFF);
+        DisplayPartyPokemonData(gPartyMenu.slotId);
+        CopyWindowToVram(sPartyMenuBoxes[gPartyMenu.slotId].windowId, COPYWIN_FULL);
+        BufferEvChangeMessage(mon, effectType, before, ItemEffectToMonEv(mon, effectType));
+        DisplayPartyMenuMessage(gStringVar4, TRUE);
+    }
+    else
+    {
+        PlaySE(SE_SELECT);
+        DisplayPartyMenuMessage(gText_WontHaveEffect, TRUE);
+    }
+    ScheduleBgCopyTilemapToVram(2);
+    if (CheckBagHasItem(item, 1))
+        gTasks[taskId].func = Task_ReturnToChooseMonAfterText;
+    else
+        gTasks[taskId].func = Task_ClosePartyMenuAfterText;
+}
+
+static void BufferEvChangeMessage(struct Pokemon *mon, u8 effectType, u16 before, u16 after)
+{
+    static const u8 sText_GainedEv[] = _("{STR_VAR_1} gained {STR_VAR_3} {STR_VAR_2} EV: ");
+    static const u8 sText_ReducedEv[] = _("{STR_VAR_1} got {STR_VAR_3} {STR_VAR_2} EV reduced: ");
+    static const u8 sText_Arrow[] = _(" {RIGHT_ARROW} ");
+    u8 number[4];
+
+    GetMonNickname(mon, gStringVar1);
+    ItemEffectToStatString(effectType, gStringVar2);
+    ConvertIntToDecimalStringN(gStringVar3, before > after ? before - after : after - before, STR_CONV_MODE_LEFT_ALIGN, 3);
+    StringExpandPlaceholders(gStringVar4, before > after ? sText_ReducedEv : sText_GainedEv);
+    ConvertIntToDecimalStringN(number, before, STR_CONV_MODE_LEFT_ALIGN, 3);
+    StringAppend(gStringVar4, number);
+    StringAppend(gStringVar4, sText_Arrow);
+    ConvertIntToDecimalStringN(number, after, STR_CONV_MODE_LEFT_ALIGN, 3);
+    StringAppend(gStringVar4, number);
 }
 
 static u16 ItemEffectToMonEv(struct Pokemon *mon, u8 effectType)
