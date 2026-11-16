@@ -457,4 +457,11 @@ gSpecials::
 	def_special ShowIvTrainingMenu
 	def_special QuotePokemonTraining
 	def_special ApplyPokemonTraining
+	def_special BufferPokemonTrainingNatures
+	def_special BufferPokemonTrainingAbility
+	def_special ShowAbilityTrainingMenu
+	def_special ShowPokemonTrainingServiceMenu
+	def_special BufferPokemonTrainingHiddenPower
+	def_special ShowIvTrainingServiceMenu
+	def_special ShowHiddenPowerTrainingMenu
 gSpecialsEnd::

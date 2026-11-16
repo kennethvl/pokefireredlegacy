@@ -1,4 +1,5 @@
 #include "global.h"
+#include "battle_main.h"
 #include "gflib.h"
 #include "event_data.h"
 #include "list_menu.h"
@@ -12,6 +13,10 @@
 #include "task.h"
 #include "constants/pokemon_training.h"
 #include "constants/songs.h"
+#include "constants/abilities.h"
+
+#define TRAINING_SERVICE_MENU 4
+#define TRAINING_IV_SERVICE_MENU 5
 
 static const u8 sText_HP[] = _("HP");
 static const u8 sText_Attack[] = _("Attack");
@@ -22,6 +27,10 @@ static const u8 sText_Speed[] = _("Speed");
 static const u8 sText_MaxAll[] = _("Max all remaining");
 static const u8 sText_Max[] = _(" (MAX)");
 static const u8 sText_Colon[] = _(": ");
+static const u8 sText_Nature[] = _("Nature");
+static const u8 sText_Ability[] = _("Ability");
+static const u8 sText_Ivs[] = _("IV training");
+static const u8 sText_HiddenPower[] = _("HIDDEN POWER type");
 static const u8 *const sIvNames[NUM_STATS] = {sText_HP, sText_Attack, sText_Defense, sText_SpAttack, sText_SpDefense, sText_Speed};
 static const u8 sIvFields[NUM_STATS] = {MON_DATA_HP_IV, MON_DATA_ATK_IV, MON_DATA_DEF_IV, MON_DATA_SPATK_IV, MON_DATA_SPDEF_IV, MON_DATA_SPEED_IV};
 static EWRAM_DATA struct ListMenuItem sTrainingItems[NUM_NATURES + 1] = {0};
@@ -53,6 +62,24 @@ static u16 GetTrainingPrice(u32 *price)
             return TRAINING_NO_CHANGE;
         *price = TRAINING_PRICE;
     }
+    else if (gSpecialVar_0x8006 == TRAINING_HIDDEN_POWER)
+    {
+        if (choice <= TYPE_NORMAL || choice >= NUMBER_OF_MON_TYPES || choice == TYPE_MYSTERY)
+            return TRAINING_INVALID;
+        if (GetMonData(mon, MON_DATA_HIDDEN_POWER_TYPE) == choice)
+            return TRAINING_NO_CHANGE;
+        *price = TRAINING_PRICE;
+    }
+    else if (gSpecialVar_0x8006 == TRAINING_ABILITY)
+    {
+        u16 species = GetMonData(mon, MON_DATA_SPECIES);
+
+        if (choice > 1 || gSpeciesInfo[species].abilities[choice] == ABILITY_NONE)
+            return TRAINING_INVALID;
+        if (GetMonAbility(mon) == gSpeciesInfo[species].abilities[choice])
+            return TRAINING_NO_CHANGE;
+        *price = TRAINING_PRICE;
+    }
     else if (gSpecialVar_0x8006 == TRAINING_IV)
     {
         if (choice > TRAINING_ALL_IVS)
@@ -69,6 +96,24 @@ static u16 GetTrainingPrice(u32 *price)
     return TRAINING_SUCCESS;
 }
 
+void BufferPokemonTrainingNatures(void)
+{
+    struct Pokemon *mon = &gPlayerParty[gSpecialVar_0x8004];
+
+    StringCopy(gStringVar2, gNatureNamePointers[GetNature(mon)]);
+    StringCopy(gStringVar3, gNatureNamePointers[GetStatNature(mon)]);
+}
+
+void BufferPokemonTrainingAbility(void)
+{
+    StringCopy(gStringVar2, gAbilityNames[GetMonAbility(&gPlayerParty[gSpecialVar_0x8004])]);
+}
+
+void BufferPokemonTrainingHiddenPower(void)
+{
+    StringCopy(gStringVar2, gTypeNames[GetMonHiddenPowerType(&gPlayerParty[gSpecialVar_0x8004])]);
+}
+
 u16 QuotePokemonTraining(void)
 {
     u32 price;
@@ -79,6 +124,10 @@ u16 QuotePokemonTraining(void)
         ConvertIntToDecimalStringN(gStringVar2, price, STR_CONV_MODE_LEFT_ALIGN, 5);
         if (gSpecialVar_0x8006 == TRAINING_NATURE)
             StringCopy(gStringVar3, gNatureNamePointers[gSpecialVar_0x8005]);
+        else if (gSpecialVar_0x8006 == TRAINING_HIDDEN_POWER)
+            StringCopy(gStringVar3, gTypeNames[gSpecialVar_0x8005]);
+        else if (gSpecialVar_0x8006 == TRAINING_ABILITY)
+            StringCopy(gStringVar3, gAbilityNames[gSpeciesInfo[GetMonData(&gPlayerParty[gSpecialVar_0x8004], MON_DATA_SPECIES)].abilities[gSpecialVar_0x8005]]);
         else if (gSpecialVar_0x8005 == TRAINING_ALL_IVS)
             StringCopy(gStringVar3, sText_MaxAll);
         else
@@ -105,6 +154,16 @@ u16 ApplyPokemonTraining(void)
     {
         value = gSpecialVar_0x8005;
         SetMonData(mon, MON_DATA_STAT_NATURE, &value);
+    }
+    else if (gSpecialVar_0x8006 == TRAINING_HIDDEN_POWER)
+    {
+        value = gSpecialVar_0x8005;
+        SetMonData(mon, MON_DATA_HIDDEN_POWER_TYPE, &value);
+    }
+    else if (gSpecialVar_0x8006 == TRAINING_ABILITY)
+    {
+        value = gSpecialVar_0x8005;
+        SetMonData(mon, MON_DATA_ABILITY_NUM, &value);
     }
     else
     {
@@ -141,16 +200,28 @@ static void Task_TrainingMenu(u8 taskId)
     ScriptContext_Enable();
 }
 
-static void ShowTrainingMenu(bool8 natureMenu)
+static void ShowTrainingMenu(u8 service)
 {
     struct ListMenuTemplate list = {0};
     const struct WindowTemplate window = {0, 6, 1, 22, 12, 15, 0x038};
-    u8 count = natureMenu ? NUM_NATURES + 1 : NUM_STATS + 2;
+    u8 count = service == TRAINING_NATURE ? NUM_NATURES + 1 : NUM_STATS + 2;
+    u16 species = SPECIES_NONE;
     u8 i;
     u8 number[4];
     u8 taskId;
     u8 windowId;
     u8 iv;
+
+    if (service == TRAINING_SERVICE_MENU || service == TRAINING_IV_SERVICE_MENU)
+        count = 3;
+    else if (service == TRAINING_HIDDEN_POWER)
+        count = NUMBER_OF_MON_TYPES - 1;
+    else if (service == TRAINING_ABILITY)
+    {
+        species = GetMonData(&gPlayerParty[gSpecialVar_0x8004], MON_DATA_SPECIES);
+        count = gSpeciesInfo[species].abilities[1] != ABILITY_NONE
+             && gSpeciesInfo[species].abilities[1] != gSpeciesInfo[species].abilities[0] ? 3 : 2;
+    }
 
     for (i = 0; i < count; i++)
     {
@@ -160,7 +231,28 @@ static void ShowTrainingMenu(bool8 natureMenu)
             sTrainingItems[i].label = gText_OptionMenuCancel;
             sTrainingItems[i].index = TRAINING_CANCEL;
         }
-        else if (natureMenu)
+        else if (service == TRAINING_SERVICE_MENU)
+        {
+            sTrainingItems[i].label = i == 0 ? sText_Nature : sText_Ability;
+            sTrainingItems[i].index = i == 0 ? TRAINING_NATURE : TRAINING_ABILITY;
+        }
+        else if (service == TRAINING_IV_SERVICE_MENU)
+        {
+            sTrainingItems[i].label = i == 0 ? sText_Ivs : sText_HiddenPower;
+            sTrainingItems[i].index = i == 0 ? TRAINING_IV : TRAINING_HIDDEN_POWER;
+        }
+        else if (service == TRAINING_HIDDEN_POWER)
+        {
+            u8 type = i + 1;
+
+            if (type >= TYPE_MYSTERY)
+                type++;
+            sTrainingItems[i].label = gTypeNames[type];
+            sTrainingItems[i].index = type;
+        }
+        else if (service == TRAINING_ABILITY)
+            sTrainingItems[i].label = gAbilityNames[gSpeciesInfo[species].abilities[i]];
+        else if (service == TRAINING_NATURE)
             sTrainingItems[i].label = gNatureNamePointers[i];
         else if (i == TRAINING_ALL_IVS)
             sTrainingItems[i].label = sText_MaxAll;
@@ -180,7 +272,7 @@ static void ShowTrainingMenu(bool8 natureMenu)
     SetStdWindowBorderStyle(windowId, 0);
     list.items = sTrainingItems;
     list.totalItems = count;
-    list.maxShowed = 6;
+    list.maxShowed = count < 6 ? count : 6;
     list.windowId = windowId;
     list.item_X = 8;
     list.cursorPal = 2;
@@ -197,10 +289,30 @@ static void ShowTrainingMenu(bool8 natureMenu)
 
 void ShowNatureTrainingMenu(void)
 {
-    ShowTrainingMenu(TRUE);
+    ShowTrainingMenu(TRAINING_NATURE);
 }
 
 void ShowIvTrainingMenu(void)
 {
-    ShowTrainingMenu(FALSE);
+    ShowTrainingMenu(TRAINING_IV);
+}
+
+void ShowAbilityTrainingMenu(void)
+{
+    ShowTrainingMenu(TRAINING_ABILITY);
+}
+
+void ShowPokemonTrainingServiceMenu(void)
+{
+    ShowTrainingMenu(TRAINING_SERVICE_MENU);
+}
+
+void ShowIvTrainingServiceMenu(void)
+{
+    ShowTrainingMenu(TRAINING_IV_SERVICE_MENU);
+}
+
+void ShowHiddenPowerTrainingMenu(void)
+{
+    ShowTrainingMenu(TRAINING_HIDDEN_POWER);
 }
