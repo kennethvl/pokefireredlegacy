@@ -198,7 +198,7 @@ const struct BattleMove gBattleMoves[MOVES_COUNT] =
     [MOVE_CUT] =
     {
         .effect = EFFECT_HIGH_CRITICAL,
-        .power = 60,
+        .power = 90,
         .type = TYPE_BUG,
         .accuracy = 100,
         .pp = 30,
@@ -536,7 +536,7 @@ const struct BattleMove gBattleMoves[MOVES_COUNT] =
     [MOVE_TWINEEDLE] =
     {
         .effect = EFFECT_TWINEEDLE,
-        .power = 40,
+        .power = 50,
         .type = TYPE_BUG,
         .accuracy = 100,
         .pp = 20,
@@ -1927,7 +1927,7 @@ const struct BattleMove gBattleMoves[MOVES_COUNT] =
     [MOVE_FLASH] =
     {
         .effect = EFFECT_ACCURACY_DOWN_HIT,
-        .power = 50,
+        .power = 90,
         .type = TYPE_ELECTRIC,
         .accuracy = 100,
         .pp = 15,
@@ -2746,7 +2746,7 @@ const struct BattleMove gBattleMoves[MOVES_COUNT] =
     [MOVE_STEEL_WING] =
     {
         .effect = EFFECT_DEFENSE_UP_HIT,
-        .power = 80,
+        .power = 90,
         .type = TYPE_STEEL,
         .accuracy = 100,
         .pp = 25,
@@ -3422,7 +3422,7 @@ const struct BattleMove gBattleMoves[MOVES_COUNT] =
     [MOVE_FACADE] =
     {
         .effect = EFFECT_FACADE,
-        .power = 90,
+        .power = 100,
         .type = TYPE_NORMAL,
         .accuracy = 100,
         .pp = 20,
@@ -4124,7 +4124,7 @@ const struct BattleMove gBattleMoves[MOVES_COUNT] =
     [MOVE_ROCK_TOMB] =
     {
         .effect = EFFECT_SPEED_DOWN_HIT,
-        .power = 60,
+        .power = 90,
         .type = TYPE_ROCK,
         .accuracy = 100,
         .pp = 25,
@@ -4319,7 +4319,7 @@ const struct BattleMove gBattleMoves[MOVES_COUNT] =
     [MOVE_AERIAL_ACE] =
     {
         .effect = EFFECT_ALWAYS_HIT,
-        .power = 60,
+        .power = 90,
         .type = TYPE_FLYING,
         .accuracy = 0,
         .pp = 20,
