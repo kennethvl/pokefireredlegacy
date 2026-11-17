@@ -270,6 +270,14 @@ int ProcessPlayerFieldInput(struct FieldInput *input)
             gFieldInputRecord.heldDirection = TRUE;
             return TRUE;
         }
+        if (!MetatileBehavior_IsFastWater(metatileBehavior)
+         && FlagGet(FLAG_BADGE05_GET)
+         && IsPlayerFacingSurfableFishableWater())
+        {
+            gFieldInputRecord.heldDirection = TRUE;
+            ScriptContext_SetupScript(EventScript_AutoSurf);
+            return TRUE;
+        }
     }
 
     if (input->pressedAButton && TryStartInteractionScript(&position, metatileBehavior, playerDirection) == TRUE)

@@ -1282,6 +1282,7 @@ extern const u8 EventScript_PokemartSign[];
 extern const u8 EventScript_PokecenterSign[];
 extern const u8 EventScript_CurrentTooFast[];
 extern const u8 EventScript_UseSurf[];
+extern const u8 EventScript_AutoSurf[];
 extern const u8 EventScript_Waterfall[];
 extern const u8 EventScript_CantUseWaterfall[];
 extern const u8 EventScript_VsSeekerChargingDone[];

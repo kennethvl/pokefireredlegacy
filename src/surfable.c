@@ -57,6 +57,8 @@ static EWRAM_DATA u8 sSurfBaseSpriteId = MAX_SPRITES;
 static u16 GetSurfMonSpecies(void)
 {
     u8 slot = VarGet(VAR_SURF_MON_SLOT);
+    if (slot >= PARTY_SIZE)
+        return SPECIES_NONE;
     return GetMonData(&gPlayerParty[slot], MON_DATA_SPECIES);
 }
 
@@ -77,7 +79,7 @@ static void LoadSurfOverworldPalette(void)
 {
     u8 slot = VarGet(VAR_SURF_MON_SLOT);
 
-    if (IsMonShiny(&gPlayerParty[slot]) == TRUE)
+    if (slot < PARTY_SIZE && IsMonShiny(&gPlayerParty[slot]) == TRUE)
         LoadSpritePalette(&sSurfablePokemonShinyPalettes[sCurrentSurfMon]);
     else
         LoadSpritePalette(&sSurfablePokemonPalettes[sCurrentSurfMon]);

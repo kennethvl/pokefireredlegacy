@@ -3054,6 +3054,12 @@ static void UseSurfEffect_2(struct Task *task)
     objectEvent = &gObjectEvents[gPlayerAvatar.objectEventId];
     if (!ObjectEventIsMovementOverridden(objectEvent) || ObjectEventClearHeldMovementIfFinished(objectEvent))
     {
+        if (task->data[15] >= PARTY_SIZE)
+        {
+            // Automatic Surf uses the generic mount without showing a party mon.
+            task->data[0] += 2;
+            return;
+        }
         StartPlayerAvatarSummonMonForFieldMoveAnim();
         ObjectEventSetHeldMovement(objectEvent, MOVEMENT_ACTION_START_ANIM_IN_DIRECTION);
         task->data[0]++;
