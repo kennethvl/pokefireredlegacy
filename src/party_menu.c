@@ -4851,7 +4851,11 @@ static void ItemUseCB_RestorePP(u8 taskId, TaskFunc func)
     {
         gPartyMenu.action = PARTY_ACTION_USE_ITEM;
         sPartyMenuInternal->exitCallback = NULL;
-        gItemUseCB = ItemUseCB_TryRestorePP;
+        if (GetItemEffectType(gSpecialVar_ItemId) == ITEM_EFFECT_PP_UP
+         || GetItemEffectType(gSpecialVar_ItemId) == ITEM_EFFECT_PP_MAX)
+            gItemUseCB = ItemUseCB_PPUp;
+        else
+            gItemUseCB = ItemUseCB_TryRestorePP;
         gTasks[taskId].func = Task_ReturnToChooseMonAfterText;
     }
     else
