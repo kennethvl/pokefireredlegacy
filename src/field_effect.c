@@ -1635,7 +1635,10 @@ static bool8 waterfall_0_setup(struct Task *task, struct ObjectEvent * playerObj
 {
     LockPlayerFieldControls();
     gPlayerAvatar.preventStep = TRUE;
-    task->data[0]++;
+    if (task->data[1] >= PARTY_SIZE)
+        task->data[0] = 3; // climbing without a Pokémon: skip the "Pokémon shows up" step
+    else
+        task->data[0]++;
     return FALSE;
 }
 

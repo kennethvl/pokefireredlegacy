@@ -278,6 +278,15 @@ int ProcessPlayerFieldInput(struct FieldInput *input)
             ScriptContext_SetupScript(EventScript_AutoSurf);
             return TRUE;
         }
+        if (MetatileBehavior_IsWaterfall(metatileBehavior)
+         && playerDirection == DIR_NORTH
+         && FlagGet(FLAG_BADGE07_GET)
+         && TestPlayerAvatarFlags(PLAYER_AVATAR_FLAG_SURFING))
+        {
+            gFieldInputRecord.heldDirection = TRUE;
+            ScriptContext_SetupScript(EventScript_AutoWaterfall);
+            return TRUE;
+        }
     }
 
     if (input->pressedAButton && TryStartInteractionScript(&position, metatileBehavior, playerDirection) == TRUE)

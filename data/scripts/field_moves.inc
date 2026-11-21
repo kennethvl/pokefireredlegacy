@@ -305,11 +305,20 @@ Text_StrengthMadeMovingBouldersPossible::
 	.string "STRENGTH made it possible to move\n"
 	.string "boulders around.$"
 
+@ Walking north into a waterfall while surfing (with the VOLCANO BADGE) climbs it, no POKéMON with WATERFALL needed.
+EventScript_AutoWaterfall::
+	goto_if_questlog EventScript_ReleaseEnd
+	lockall
+EventScript_ClimbWaterfallWithoutMon:
+	setfieldeffectargument 0, PARTY_SIZE
+	dofieldeffect FLDEFF_USE_WATERFALL
+	goto EventScript_EndWaterfall
+
 EventScript_Waterfall::
 	goto_if_questlog EventScript_ReleaseEnd
 	lockall
 	checkpartymove MOVE_WATERFALL
-	goto_if_eq VAR_RESULT, PARTY_SIZE, EventScript_WaterCrashingDown
+	goto_if_eq VAR_RESULT, PARTY_SIZE, EventScript_ClimbWaterfallWithoutMon
 	bufferpartymonnick STR_VAR_1, VAR_RESULT
 	setfieldeffectargument 0, VAR_RESULT
 	msgbox Text_UseWaterfall, MSGBOX_YESNO
