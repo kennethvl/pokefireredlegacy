@@ -258,9 +258,6 @@ int main(void) {
 struct {u16 expYield;} gSpeciesInfo[NUM_SPECIES];
 struct {u16 species, item, ability, hp, maxHP, attack, defense, speed, spAttack, spDefense; u8 level;} gBattleMons[4];
 struct {struct {u8 holdEffect;} enigmaBerry;} save, *gSaveBlock1Ptr = &save;
-struct {u8 optionsExpAllDisabled;} options, *gSaveBlock2Ptr = &options;
-u8 gSentPokesToOpponent[2];
-u16 gExpShareExp;
 struct {u16 expValue; u8 givenExpMons, expGetterMonId, expGetterBattlerId, wildVictorySong;} battle, *gBattleStruct = &battle;
 struct {u8 getexpState;} gBattleScripting;
 struct {u16 stats[6];} stats;
@@ -355,32 +352,18 @@ int main(void) {
     cap = 20; partyMessages = 0;
     run_award(); assert(partyMessages == 0);
     for (i = 0; i < 3; i++) assert(summaries[i] == 1 && evs[i] == 2);
-    // OFF restores the original split, with no award to an uninvolved party mon.
-    reset_awards(); options.optionsExpAllDisabled = TRUE; gSentPokesToOpponent[0] = 3;
+    // A held Exp. Share doesn't change anything: everyone still gets the full award.
+    reset_awards();
     gPlayerParty[1].fields[MON_DATA_HELD_ITEM] = ITEM_NONE;
     gPlayerParty[2].fields[MON_DATA_OT_ID] = 0;
-    run_award();
-    assert(partyMessages == 1 && gained[0] == 50 && gained[1] == 50 && gained[2] == 0);
-    assert(evs[0] == 1 && evs[1] == 1 && evs[2] == 0);
-    // A held Exp. Share still gets its pool in classic mode.
-    reset_awards(); gPlayerParty[2].fields[MON_DATA_HELD_ITEM] = ITEM_EXP_SHARE;
-    run_award(); assert(gained[0] == 25 && gained[1] == 25 && gained[2] == 50);
-    assert(evs[0] == 1 && evs[1] == 1 && evs[2] == 1);
-    // A participant holding Exp. Share receives both portions, with multiple holders.
-    reset_awards(); gPlayerParty[0].fields[MON_DATA_HELD_ITEM] = ITEM_EXP_SHARE;
-    run_award(); assert(gained[0] == 50 && gained[1] == 25 && gained[2] == 25);
-    // Fainted holders don't dilute the pool or receive EXP/EVs.
-    reset_awards(); gPlayerParty[2].fields[MON_DATA_HP] = 0;
-    run_award(); assert(gained[0] == 75 && gained[1] == 25 && gained[2] == 0 && evs[2] == 0);
-    // Turning it back ON restores full awards even when Exp. Share is held.
-    reset_awards(); options.optionsExpAllDisabled = FALSE;
+    gPlayerParty[2].fields[MON_DATA_HELD_ITEM] = ITEM_EXP_SHARE;
     run_award(); assert(gained[0] == 100 && gained[1] == 100 && gained[2] == 100);
-    puts("Party EXP toggle: full/classic awards, held Exp. Share, exclusions and EVs passed");
+    puts("Party EXP: full awards for every healthy mon, held Exp. Share, exclusions and EVs passed");
 }
 '''
         self.compile_and_run(code)
 
-    def test_exp_option_save_layout_and_default(self):
+    def test_option_save_layout_unchanged(self):
         code = r'''
 #include "global.h"
 #include <assert.h>
@@ -388,19 +371,10 @@ int main(void) {
 struct SaveBlock2 saveBlock, *gSaveBlock2Ptr = &saveBlock;
 ''' + function("src/new_game.c", "SetDefaultOptions") + r'''
 int main(void) {
-    struct SaveBlock2 reloaded;
     SetDefaultOptions();
-    assert(!saveBlock.optionsExpAllDisabled);
     assert(offsetof(struct SaveBlock2, pokedex) == 0x18);
-    saveBlock.optionsExpAllDisabled = TRUE;
-    memcpy(&reloaded, &saveBlock, sizeof(saveBlock));
-    assert(reloaded.optionsExpAllDisabled);
-    assert(reloaded.optionsFieldMoveLearnset == saveBlock.optionsFieldMoveLearnset);
-    assert(reloaded.optionsTextSpeed == OPTIONS_TEXT_SPEED_FAST);
-    saveBlock.optionsExpAllDisabled = FALSE;
-    memcpy(&reloaded, &saveBlock, sizeof(saveBlock));
-    assert(!reloaded.optionsExpAllDisabled);
-    puts("EXP ALL defaults ON and persists in the existing option padding");
+    assert(saveBlock.optionsTextSpeed == OPTIONS_TEXT_SPEED_FAST);
+    puts("Option bits still fit before the Pokedex");
 }
 '''
         self.compile_and_run(code)

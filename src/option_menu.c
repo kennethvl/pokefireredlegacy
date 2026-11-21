@@ -33,7 +33,6 @@ enum
 {
     BATTLEMENUITEM_BATTLESCENE = 0,
     BATTLEMENUITEM_BATTLESTYLE,
-    BATTLEMENUITEM_EXPALL,
     BATTLEMENUITEM_BACK,
     BATTLEMENUITEM_COUNT
 };
@@ -186,13 +185,12 @@ static const u8 *const sOptionMenuItemsNames[MENUITEM_COUNT] =
 
 // Items inside the BATTLE submenu.
 // 0 = not cyclable (BACK just exits the submenu).
-static const u16 sBattleMenuItemCounts[BATTLEMENUITEM_COUNT] = {2, 2, 2, 0};
+static const u16 sBattleMenuItemCounts[BATTLEMENUITEM_COUNT] = {2, 2, 0};
 
 static const u8 *const sBattleMenuItemsNames[BATTLEMENUITEM_COUNT] =
 {
     [BATTLEMENUITEM_BATTLESCENE] = gText_BattleScene,
     [BATTLEMENUITEM_BATTLESTYLE] = gText_BattleStyle,
-    [BATTLEMENUITEM_EXPALL]      = gText_ExpAll,
     [BATTLEMENUITEM_BACK]        = gText_Back,
 };
 
@@ -323,7 +321,6 @@ void CB2_OptionsMenuFromStartMenu(void)
     sOptionMenuPtr->option[MENUITEM_FRAMETYPE] = gSaveBlock2Ptr->optionsWindowFrameType;
     sOptionMenuPtr->battleOption[BATTLEMENUITEM_BATTLESCENE] = gSaveBlock2Ptr->optionsBattleSceneOff;
     sOptionMenuPtr->battleOption[BATTLEMENUITEM_BATTLESTYLE] = gSaveBlock2Ptr->optionsBattleStyle;
-    sOptionMenuPtr->battleOption[BATTLEMENUITEM_EXPALL] = gSaveBlock2Ptr->optionsExpAllDisabled;
     sOptionMenuPtr->hackOption[HACKMENUITEM_ENEMYSUMMARY] = gSaveBlock2Ptr->optionsEnemySummary;
     sOptionMenuPtr->hackOption[HACKMENUITEM_MOVEEFFECTIVENESS] = gSaveBlock2Ptr->optionsMoveEffectiveness;
     sOptionMenuPtr->hackOption[HACKMENUITEM_SURVIVEPOISON] = gSaveBlock2Ptr->optionsSurvivePoison;
@@ -756,9 +753,6 @@ static void BufferOptionMenuString(u8 selection)
             else
                 AddTextPrinterParameterized3(1, FONT_NORMAL, x, y, dst, -1, sBattleStyleOptions[sOptionMenuPtr->battleOption[selection]]);
             break;
-        case BATTLEMENUITEM_EXPALL:
-            AddTextPrinterParameterized3(1, FONT_NORMAL, x, y, dst, -1, sBattleSceneOptions[sOptionMenuPtr->battleOption[selection]]);
-            break;
         default: // BATTLEMENUITEM_BACK: no value column
             break;
         }
@@ -811,7 +805,6 @@ static void CloseAndSaveOptionMenu(u8 taskId)
     gSaveBlock2Ptr->optionsWindowFrameType = sOptionMenuPtr->option[MENUITEM_FRAMETYPE];
     gSaveBlock2Ptr->optionsBattleSceneOff = sOptionMenuPtr->battleOption[BATTLEMENUITEM_BATTLESCENE];
     gSaveBlock2Ptr->optionsBattleStyle = sOptionMenuPtr->battleOption[BATTLEMENUITEM_BATTLESTYLE];
-    gSaveBlock2Ptr->optionsExpAllDisabled = sOptionMenuPtr->battleOption[BATTLEMENUITEM_EXPALL];
     SetPokemonCryStereo(gSaveBlock2Ptr->optionsSound);
     gSaveBlock2Ptr->optionsEnemySummary = sOptionMenuPtr->hackOption[HACKMENUITEM_ENEMYSUMMARY];
     gSaveBlock2Ptr->optionsMoveEffectiveness = sOptionMenuPtr->hackOption[HACKMENUITEM_MOVEEFFECTIVENESS];
