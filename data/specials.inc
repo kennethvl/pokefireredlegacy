@@ -453,17 +453,6 @@ gSpecials::
 	def_special UpdateLoreleiDollCollection
 	def_special LoopWingFlapSound
 	def_special CreateEnemyEventMon
-	def_special ShowNatureTrainingMenu
-	def_special ShowIvTrainingMenu
-	def_special QuotePokemonTraining
-	def_special ApplyPokemonTraining
-	def_special BufferPokemonTrainingNatures
-	def_special BufferPokemonTrainingAbility
-	def_special ShowAbilityTrainingMenu
-	def_special ShowPokemonTrainingServiceMenu
-	def_special BufferPokemonTrainingHiddenPower
-	def_special ShowIvTrainingServiceMenu
-	def_special ShowHiddenPowerTrainingMenu
 	def_special MomShowGreeting
 	def_special MomShowGoodbye
 	def_special MomShowServiceMenu

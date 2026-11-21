@@ -8,7 +8,6 @@
 #include "constants/maps.h"
 #include "constants/metatile_labels.h"
 #include "constants/pokemon.h"
-#include "constants/pokemon_training.h"
 #include "constants/pkmn_center_mom.h"
 #include "constants/moves.h"
 #include "constants/songs.h"
@@ -1477,5 +1476,4 @@ Text_TestMsg::
 	.include "data/maps/TwoIsland_SouthSide_Cave_B1F/text.inc"
 
 
-	.include "data/scripts/pokemon_training.inc"
 	.include "data/scripts/pkmn_center_mom.inc"

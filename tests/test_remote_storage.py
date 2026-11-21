@@ -103,6 +103,7 @@ typedef int bool8;
 #define TRUE 1
 #define FALSE 0
 #define OPTION_MOVE_MONS 2
+#define OPTION_MOM 5
 #define STATE_LOAD 0
 #define tState data[0]
 #define tSelectedOption data[1]
@@ -110,15 +111,16 @@ struct {int data[16];} gTasks[1];
 bool8 sStorageOpenedFromStartMenu;
 u8 sPreviousBoxOption;
 void (*gFieldCallback)(void), (*mainCallback)(void);
-int enteredOption = -1, getterCalls, locks;
+int enteredOption = -1, getterCalls, locks, currentOption = OPTION_MOVE_MONS;
 void Task_PCMainMenu(u8 task) {(void)task;}
 u8 CreateTask(void (*callback)(u8), u8 priority) {(void)callback; assert(priority == 80); return 0;}
 void LockPlayerFieldControls(void) {locks++;}
 void FieldTask_ReturnToPcMenu(void) {}
+void FieldCB_ContinueScriptHandleMusic(void) {}
 void CB2_ReturnToField(void) {}
 void CB2_ReturnToFieldWithOpenMenu(void) {}
 void EnterPokeStorage(u8 option) {enteredOption = option;}
-u8 GetCurrentBoxOption(void) {getterCalls++; return OPTION_MOVE_MONS;}
+u8 GetCurrentBoxOption(void) {getterCalls++; return currentOption;}
 void SetMainCallback2(void (*callback)(void)) {mainCallback = callback;}
 '''
         for name in ["CB2_OpenPokemonStorageFromStartMenu", "CB2_ExitPokeStorage", "ShowPokemonStorageSystemPC"]:
@@ -136,6 +138,11 @@ int main(void) {
     CB2_ExitPokeStorage();
     assert(mainCallback == CB2_ReturnToField && gFieldCallback == FieldTask_ReturnToPcMenu);
     assert(sPreviousBoxOption == OPTION_MOVE_MONS && getterCalls == 1);
+    // Mom's PC goes back to her script, and doesn't touch the PC menu's remembered option
+    currentOption = OPTION_MOM;
+    CB2_ExitPokeStorage();
+    assert(mainCallback == CB2_ReturnToField && gFieldCallback == FieldCB_ContinueScriptHandleMusic);
+    assert(sPreviousBoxOption == OPTION_MOVE_MONS && getterCalls == 2);
     puts("Storage entry/exit: pause returns to pause; regular PCs keep their original return path");
 }
 '''

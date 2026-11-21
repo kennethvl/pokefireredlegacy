@@ -382,20 +382,23 @@ void CB2_OpenPokemonStorageItemsFromStartMenu(void)
 
 void CB2_ExitPokeStorage(void)
 {
-    if (GetCurrentBoxOption() == OPTION_MOM)
-    {
-        // Opened by Mom's script: go back to the field and let the script continue.
-        gFieldCallback = FieldCB_ContinueScriptHandleMusic;
-        SetMainCallback2(CB2_ReturnToField);
-        return;
-    }
+    u8 boxOption;
+
     if (sStorageOpenedFromStartMenu)
     {
         sStorageOpenedFromStartMenu = FALSE;
         SetMainCallback2(CB2_ReturnToFieldWithOpenMenu);
         return;
     }
-    sPreviousBoxOption = GetCurrentBoxOption();
+    boxOption = GetCurrentBoxOption();
+    if (boxOption == OPTION_MOM)
+    {
+        // Opened by Mom's script: go back to the field and let the script continue.
+        gFieldCallback = FieldCB_ContinueScriptHandleMusic;
+        SetMainCallback2(CB2_ReturnToField);
+        return;
+    }
+    sPreviousBoxOption = boxOption;
     gFieldCallback = FieldTask_ReturnToPcMenu;
     SetMainCallback2(CB2_ReturnToField);
 }
