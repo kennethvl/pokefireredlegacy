@@ -1299,7 +1299,7 @@ static void MomRefuse(const u8 *text, u8 nextState)
 static void MomAskYesNo(const u8 *text)
 {
     PrintMomMessage(text);
-    ShowYesNoWindow(0);
+    ShowYesNoWindow(-1); // FireRed's yes/no box starts on No; step back to Yes
     gStorage->state = MOMSTATE_CONFIRM;
 }
 
