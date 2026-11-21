@@ -2072,7 +2072,7 @@ void CreateMonWithEVSpread(struct Pokemon *mon, u16 species, u8 level, u8 fixedI
         evsBits >>= 1;
     }
 
-    evAmount = MAX_TOTAL_EVS / statCount;
+    evAmount = STANDARD_TOTAL_EVS / statCount;
 
     evsBits = 1;
 
