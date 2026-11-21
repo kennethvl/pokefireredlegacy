@@ -61,8 +61,32 @@ SaffronCity_Mart_Items::
 # 31 "data/maps/SaffronCity_Mart/scripts.pory"
 	.2byte ITEM_MAX_REPEL
 # 32 "data/maps/SaffronCity_Mart/scripts.pory"
-	.2byte ITEM_NONE
+	.2byte ITEM_POKE_BALL
 # 33 "data/maps/SaffronCity_Mart/scripts.pory"
-	release
+	.2byte ITEM_ULTRA_BALL
 # 34 "data/maps/SaffronCity_Mart/scripts.pory"
+	.2byte ITEM_MASTER_BALL
+# 35 "data/maps/SaffronCity_Mart/scripts.pory"
+	.2byte ITEM_SAFARI_BALL
+# 36 "data/maps/SaffronCity_Mart/scripts.pory"
+	.2byte ITEM_NET_BALL
+# 37 "data/maps/SaffronCity_Mart/scripts.pory"
+	.2byte ITEM_DIVE_BALL
+# 38 "data/maps/SaffronCity_Mart/scripts.pory"
+	.2byte ITEM_NEST_BALL
+# 39 "data/maps/SaffronCity_Mart/scripts.pory"
+	.2byte ITEM_REPEAT_BALL
+# 40 "data/maps/SaffronCity_Mart/scripts.pory"
+	.2byte ITEM_TIMER_BALL
+# 41 "data/maps/SaffronCity_Mart/scripts.pory"
+	.2byte ITEM_LUXURY_BALL
+# 42 "data/maps/SaffronCity_Mart/scripts.pory"
+	.2byte ITEM_PREMIER_BALL
+# 43 "data/maps/SaffronCity_Mart/scripts.pory"
+	.2byte ITEM_LUCKY_EGG
+# 44 "data/maps/SaffronCity_Mart/scripts.pory"
+	.2byte ITEM_NONE
+# 45 "data/maps/SaffronCity_Mart/scripts.pory"
+	release
+# 46 "data/maps/SaffronCity_Mart/scripts.pory"
 	end

@@ -47,32 +47,56 @@ ThreeIsland_Mart_Items::
 # 24 "data/maps/ThreeIsland_Mart/scripts.pory"
 	.2byte ITEM_TINY_MUSHROOM
 # 25 "data/maps/ThreeIsland_Mart/scripts.pory"
-	.2byte ITEM_NONE
+	.2byte ITEM_POKE_BALL
 # 26 "data/maps/ThreeIsland_Mart/scripts.pory"
-	release
+	.2byte ITEM_GREAT_BALL
 # 27 "data/maps/ThreeIsland_Mart/scripts.pory"
-	end
+	.2byte ITEM_MASTER_BALL
 # 28 "data/maps/ThreeIsland_Mart/scripts.pory"
-
+	.2byte ITEM_SAFARI_BALL
 # 29 "data/maps/ThreeIsland_Mart/scripts.pory"
-ThreeIsland_Mart_EventScript_Picnicker::
+	.2byte ITEM_NET_BALL
 # 30 "data/maps/ThreeIsland_Mart/scripts.pory"
-	msgbox ThreeIsland_Mart_Text_TrueThatCeldadonDeptStoreBigger, MSGBOX_NPC
+	.2byte ITEM_DIVE_BALL
 # 31 "data/maps/ThreeIsland_Mart/scripts.pory"
-	end
+	.2byte ITEM_NEST_BALL
 # 32 "data/maps/ThreeIsland_Mart/scripts.pory"
-
+	.2byte ITEM_REPEAT_BALL
 # 33 "data/maps/ThreeIsland_Mart/scripts.pory"
-ThreeIsland_Mart_EventScript_BugCatcher::
+	.2byte ITEM_TIMER_BALL
 # 34 "data/maps/ThreeIsland_Mart/scripts.pory"
-	msgbox ThreeIsland_Mart_Text_PeopleHealWithBerriesFromForest, MSGBOX_NPC
+	.2byte ITEM_LUXURY_BALL
 # 35 "data/maps/ThreeIsland_Mart/scripts.pory"
-	end
+	.2byte ITEM_PREMIER_BALL
 # 36 "data/maps/ThreeIsland_Mart/scripts.pory"
-
+	.2byte ITEM_LUCKY_EGG
 # 37 "data/maps/ThreeIsland_Mart/scripts.pory"
-ThreeIsland_Mart_EventScript_Youngster::
+	.2byte ITEM_NONE
 # 38 "data/maps/ThreeIsland_Mart/scripts.pory"
-	msgbox ThreeIsland_Mart_Text_BikersWereAboutToTrashMart, MSGBOX_NPC
+	release
 # 39 "data/maps/ThreeIsland_Mart/scripts.pory"
+	end
+# 40 "data/maps/ThreeIsland_Mart/scripts.pory"
+
+# 41 "data/maps/ThreeIsland_Mart/scripts.pory"
+ThreeIsland_Mart_EventScript_Picnicker::
+# 42 "data/maps/ThreeIsland_Mart/scripts.pory"
+	msgbox ThreeIsland_Mart_Text_TrueThatCeldadonDeptStoreBigger, MSGBOX_NPC
+# 43 "data/maps/ThreeIsland_Mart/scripts.pory"
+	end
+# 44 "data/maps/ThreeIsland_Mart/scripts.pory"
+
+# 45 "data/maps/ThreeIsland_Mart/scripts.pory"
+ThreeIsland_Mart_EventScript_BugCatcher::
+# 46 "data/maps/ThreeIsland_Mart/scripts.pory"
+	msgbox ThreeIsland_Mart_Text_PeopleHealWithBerriesFromForest, MSGBOX_NPC
+# 47 "data/maps/ThreeIsland_Mart/scripts.pory"
+	end
+# 48 "data/maps/ThreeIsland_Mart/scripts.pory"
+
+# 49 "data/maps/ThreeIsland_Mart/scripts.pory"
+ThreeIsland_Mart_EventScript_Youngster::
+# 50 "data/maps/ThreeIsland_Mart/scripts.pory"
+	msgbox ThreeIsland_Mart_Text_BikersWereAboutToTrashMart, MSGBOX_NPC
+# 51 "data/maps/ThreeIsland_Mart/scripts.pory"
 	end

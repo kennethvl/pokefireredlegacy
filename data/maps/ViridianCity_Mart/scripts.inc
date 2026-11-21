@@ -145,7 +145,7 @@ ViridianCity_Mart_Items::
 # 73 "data/maps/ViridianCity_Mart/scripts.pory"
 	.2byte ITEM_MASTER_BALL
 # 74 "data/maps/ViridianCity_Mart/scripts.pory"
-	.2byte ITEM_ULTRA_BALL 
+	.2byte ITEM_ULTRA_BALL
 # 75 "data/maps/ViridianCity_Mart/scripts.pory"
 	.2byte ITEM_GREAT_BALL
 # 76 "data/maps/ViridianCity_Mart/scripts.pory"

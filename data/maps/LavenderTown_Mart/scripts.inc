@@ -75,8 +75,32 @@ LavenderTown_Mart_Items::
 # 38 "data/maps/LavenderTown_Mart/scripts.pory"
 	.2byte ITEM_SUPER_REPEL
 # 39 "data/maps/LavenderTown_Mart/scripts.pory"
-	.2byte ITEM_NONE
+	.2byte ITEM_POKE_BALL
 # 40 "data/maps/LavenderTown_Mart/scripts.pory"
-	release
+	.2byte ITEM_ULTRA_BALL
 # 41 "data/maps/LavenderTown_Mart/scripts.pory"
+	.2byte ITEM_MASTER_BALL
+# 42 "data/maps/LavenderTown_Mart/scripts.pory"
+	.2byte ITEM_SAFARI_BALL
+# 43 "data/maps/LavenderTown_Mart/scripts.pory"
+	.2byte ITEM_NET_BALL
+# 44 "data/maps/LavenderTown_Mart/scripts.pory"
+	.2byte ITEM_DIVE_BALL
+# 45 "data/maps/LavenderTown_Mart/scripts.pory"
+	.2byte ITEM_NEST_BALL
+# 46 "data/maps/LavenderTown_Mart/scripts.pory"
+	.2byte ITEM_REPEAT_BALL
+# 47 "data/maps/LavenderTown_Mart/scripts.pory"
+	.2byte ITEM_TIMER_BALL
+# 48 "data/maps/LavenderTown_Mart/scripts.pory"
+	.2byte ITEM_LUXURY_BALL
+# 49 "data/maps/LavenderTown_Mart/scripts.pory"
+	.2byte ITEM_PREMIER_BALL
+# 50 "data/maps/LavenderTown_Mart/scripts.pory"
+	.2byte ITEM_LUCKY_EGG
+# 51 "data/maps/LavenderTown_Mart/scripts.pory"
+	.2byte ITEM_NONE
+# 52 "data/maps/LavenderTown_Mart/scripts.pory"
+	release
+# 53 "data/maps/LavenderTown_Mart/scripts.pory"
 	end

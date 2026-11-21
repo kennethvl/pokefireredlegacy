@@ -57,16 +57,40 @@ FourIsland_Mart_Items::
 # 29 "data/maps/FourIsland_Mart/scripts.pory"
 	.2byte ITEM_MIRACLE_SEED
 # 30 "data/maps/FourIsland_Mart/scripts.pory"
-	.2byte ITEM_NONE
+	.2byte ITEM_POKE_BALL
 # 31 "data/maps/FourIsland_Mart/scripts.pory"
-	release
+	.2byte ITEM_GREAT_BALL
 # 32 "data/maps/FourIsland_Mart/scripts.pory"
-	end
+	.2byte ITEM_MASTER_BALL
 # 33 "data/maps/FourIsland_Mart/scripts.pory"
-
+	.2byte ITEM_SAFARI_BALL
 # 34 "data/maps/FourIsland_Mart/scripts.pory"
-FourIsland_Mart_EventScript_Camper::
+	.2byte ITEM_NET_BALL
 # 35 "data/maps/FourIsland_Mart/scripts.pory"
-	msgbox FourIsland_Mart_Text_IcefallCaveIsFrigid, MSGBOX_NPC
+	.2byte ITEM_DIVE_BALL
 # 36 "data/maps/FourIsland_Mart/scripts.pory"
+	.2byte ITEM_NEST_BALL
+# 37 "data/maps/FourIsland_Mart/scripts.pory"
+	.2byte ITEM_REPEAT_BALL
+# 38 "data/maps/FourIsland_Mart/scripts.pory"
+	.2byte ITEM_TIMER_BALL
+# 39 "data/maps/FourIsland_Mart/scripts.pory"
+	.2byte ITEM_LUXURY_BALL
+# 40 "data/maps/FourIsland_Mart/scripts.pory"
+	.2byte ITEM_PREMIER_BALL
+# 41 "data/maps/FourIsland_Mart/scripts.pory"
+	.2byte ITEM_LUCKY_EGG
+# 42 "data/maps/FourIsland_Mart/scripts.pory"
+	.2byte ITEM_NONE
+# 43 "data/maps/FourIsland_Mart/scripts.pory"
+	release
+# 44 "data/maps/FourIsland_Mart/scripts.pory"
+	end
+# 45 "data/maps/FourIsland_Mart/scripts.pory"
+
+# 46 "data/maps/FourIsland_Mart/scripts.pory"
+FourIsland_Mart_EventScript_Camper::
+# 47 "data/maps/FourIsland_Mart/scripts.pory"
+	msgbox FourIsland_Mart_Text_IcefallCaveIsFrigid, MSGBOX_NPC
+# 48 "data/maps/FourIsland_Mart/scripts.pory"
 	end

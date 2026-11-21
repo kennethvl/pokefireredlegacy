@@ -59,16 +59,40 @@ SixIsland_Mart_Items::
 # 30 "data/maps/SixIsland_Mart/scripts.pory"
 	.2byte ITEM_POISON_BARB
 # 31 "data/maps/SixIsland_Mart/scripts.pory"
-	.2byte ITEM_NONE
+	.2byte ITEM_POKE_BALL
 # 32 "data/maps/SixIsland_Mart/scripts.pory"
-	release
+	.2byte ITEM_GREAT_BALL
 # 33 "data/maps/SixIsland_Mart/scripts.pory"
-	end
+	.2byte ITEM_MASTER_BALL
 # 34 "data/maps/SixIsland_Mart/scripts.pory"
-
+	.2byte ITEM_SAFARI_BALL
 # 35 "data/maps/SixIsland_Mart/scripts.pory"
-SixIsland_Mart_EventScript_Picnicker::
+	.2byte ITEM_NET_BALL
 # 36 "data/maps/SixIsland_Mart/scripts.pory"
-	msgbox SixIsland_Mart_Text_ShouldBuyMailAndWriteLetter, MSGBOX_NPC
+	.2byte ITEM_DIVE_BALL
 # 37 "data/maps/SixIsland_Mart/scripts.pory"
+	.2byte ITEM_NEST_BALL
+# 38 "data/maps/SixIsland_Mart/scripts.pory"
+	.2byte ITEM_REPEAT_BALL
+# 39 "data/maps/SixIsland_Mart/scripts.pory"
+	.2byte ITEM_TIMER_BALL
+# 40 "data/maps/SixIsland_Mart/scripts.pory"
+	.2byte ITEM_LUXURY_BALL
+# 41 "data/maps/SixIsland_Mart/scripts.pory"
+	.2byte ITEM_PREMIER_BALL
+# 42 "data/maps/SixIsland_Mart/scripts.pory"
+	.2byte ITEM_LUCKY_EGG
+# 43 "data/maps/SixIsland_Mart/scripts.pory"
+	.2byte ITEM_NONE
+# 44 "data/maps/SixIsland_Mart/scripts.pory"
+	release
+# 45 "data/maps/SixIsland_Mart/scripts.pory"
+	end
+# 46 "data/maps/SixIsland_Mart/scripts.pory"
+
+# 47 "data/maps/SixIsland_Mart/scripts.pory"
+SixIsland_Mart_EventScript_Picnicker::
+# 48 "data/maps/SixIsland_Mart/scripts.pory"
+	msgbox SixIsland_Mart_Text_ShouldBuyMailAndWriteLetter, MSGBOX_NPC
+# 49 "data/maps/SixIsland_Mart/scripts.pory"
 	end

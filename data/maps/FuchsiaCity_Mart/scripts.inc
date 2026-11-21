@@ -67,8 +67,26 @@ FuchsiaCity_Mart_Items::
 # 34 "data/maps/FuchsiaCity_Mart/scripts.pory"
 	.2byte ITEM_BERRY_JUICE
 # 35 "data/maps/FuchsiaCity_Mart/scripts.pory"
-	.2byte ITEM_NONE
+	.2byte ITEM_MASTER_BALL
 # 36 "data/maps/FuchsiaCity_Mart/scripts.pory"
-	release
+	.2byte ITEM_SAFARI_BALL
 # 37 "data/maps/FuchsiaCity_Mart/scripts.pory"
+	.2byte ITEM_NET_BALL
+# 38 "data/maps/FuchsiaCity_Mart/scripts.pory"
+	.2byte ITEM_DIVE_BALL
+# 39 "data/maps/FuchsiaCity_Mart/scripts.pory"
+	.2byte ITEM_REPEAT_BALL
+# 40 "data/maps/FuchsiaCity_Mart/scripts.pory"
+	.2byte ITEM_TIMER_BALL
+# 41 "data/maps/FuchsiaCity_Mart/scripts.pory"
+	.2byte ITEM_LUXURY_BALL
+# 42 "data/maps/FuchsiaCity_Mart/scripts.pory"
+	.2byte ITEM_PREMIER_BALL
+# 43 "data/maps/FuchsiaCity_Mart/scripts.pory"
+	.2byte ITEM_LUCKY_EGG
+# 44 "data/maps/FuchsiaCity_Mart/scripts.pory"
+	.2byte ITEM_NONE
+# 45 "data/maps/FuchsiaCity_Mart/scripts.pory"
+	release
+# 46 "data/maps/FuchsiaCity_Mart/scripts.pory"
 	end

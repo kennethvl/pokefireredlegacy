@@ -135,43 +135,43 @@ IndigoPlateau_PokemonCenter_1F_Items::
 # 68 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
 	.2byte ITEM_MAX_REPEL
 # 69 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	.2byte ITEM_NONE
+	.2byte ITEM_POKE_BALL
 # 70 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	release
+	.2byte ITEM_MASTER_BALL
 # 71 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	end
+	.2byte ITEM_SAFARI_BALL
 # 72 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-
+	.2byte ITEM_NET_BALL
 # 73 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-IndigoPlateau_PokemonCenter_1F_EventScript_Nurse::
+	.2byte ITEM_DIVE_BALL
 # 74 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	lock
+	.2byte ITEM_NEST_BALL
 # 75 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	faceplayer
+	.2byte ITEM_REPEAT_BALL
 # 76 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	call EventScript_PkmnCenterNurse
+	.2byte ITEM_TIMER_BALL
 # 77 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	release
+	.2byte ITEM_LUXURY_BALL
 # 78 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	end
+	.2byte ITEM_PREMIER_BALL
 # 79 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-
+	.2byte ITEM_LUCKY_EGG
 # 80 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-IndigoPlateau_PokemonCenter_1F_EventScript_TMGUY::
+	.2byte ITEM_NONE
 # 81 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	goto_if_questlog EventScript_ReleaseEnd
+	release
 # 82 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	lock
+	end
 # 83 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	faceplayer
+
 # 84 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	message IndigoPlateau_PokemonCenter_1F_Text_TmGuy
+IndigoPlateau_PokemonCenter_1F_EventScript_Nurse::
 # 85 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	waitmessage
+	lock
 # 86 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	pokemart IndigoPlateau_PokemonCenter_1F_TMGUY
+	faceplayer
 # 87 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	msgbox Text_PleaseComeAgain
+	call EventScript_PkmnCenterNurse
 # 88 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
 	release
 # 89 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
@@ -179,154 +179,176 @@ IndigoPlateau_PokemonCenter_1F_EventScript_TMGUY::
 # 90 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
 
 # 91 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	.align 2
+IndigoPlateau_PokemonCenter_1F_EventScript_TMGUY::
 # 92 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-IndigoPlateau_PokemonCenter_1F_TMGUY::
+	goto_if_questlog EventScript_ReleaseEnd
 # 93 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	.2byte ITEM_TM07
+	lock
 # 94 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	.2byte ITEM_TM11
+	faceplayer
 # 95 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	.2byte ITEM_TM13
+	message IndigoPlateau_PokemonCenter_1F_Text_TmGuy
 # 96 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	.2byte ITEM_TM18
+	waitmessage
 # 97 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	.2byte ITEM_TM23
+	pokemart IndigoPlateau_PokemonCenter_1F_TMGUY
 # 98 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	.2byte ITEM_TM24
+	msgbox Text_PleaseComeAgain
 # 99 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	.2byte ITEM_TM30
+	release
 # 100 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	.2byte ITEM_TM35
+	end
 # 101 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	.2byte ITEM_TM37
+
 # 102 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	.2byte ITEM_TM48
+	.align 2
 # 103 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	.2byte ITEM_TM49
+IndigoPlateau_PokemonCenter_1F_TMGUY::
 # 104 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	.2byte ITEM_NONE
+	.2byte ITEM_TM07
 # 105 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	release
+	.2byte ITEM_TM11
 # 106 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	end
+	.2byte ITEM_TM13
 # 107 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-
+	.2byte ITEM_TM18
 # 108 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-
+	.2byte ITEM_TM23
 # 109 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-IndigoPlateau_PokemonCenter_1F_EventScript_TrainMore::
+	.2byte ITEM_TM24
 # 110 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	msgbox IndigoPlateau_PokemonCenter_1F_Text_TrainMore, MSGBOX_NPC
+	.2byte ITEM_TM30
 # 111 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	end
+	.2byte ITEM_TM35
 # 112 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-
+	.2byte ITEM_TM37
 # 113 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-IndigoPlateau_PokemonCenter_1F_EventScript_TrainMoreGengar::
+	.2byte ITEM_TM48
 # 114 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	lock
+	.2byte ITEM_TM49
 # 115 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	faceplayer
+	.2byte ITEM_NONE
 # 116 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	playmoncry SPECIES_GENGAR, 0
+	release
 # 117 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	msgbox IndigoPlateau_PokemonCenter_1F_Text_TrainMoreGengar
+	end
 # 118 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	waitmoncry
+
 # 119 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	release
+
 # 120 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	end
+IndigoPlateau_PokemonCenter_1F_EventScript_TrainMore::
 # 121 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-
+	msgbox IndigoPlateau_PokemonCenter_1F_Text_TrainMore, MSGBOX_NPC
 # 122 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-IndigoPlateau_PokemonCenter_1F_EventScript_AlmostReady::
+	end
 # 123 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	msgbox IndigoPlateau_PokemonCenter_1F_Text_AlmostReady, MSGBOX_NPC
+
 # 124 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	end
+IndigoPlateau_PokemonCenter_1F_EventScript_TrainMoreGengar::
 # 125 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-
+	lock
 # 126 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-IndigoPlateau_PokemonCenter_1F_EventScript_AlmostReadyAlakazam::
-# 127 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	lock
-# 128 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
 	faceplayer
+# 127 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_GENGAR, 0
+# 128 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	msgbox IndigoPlateau_PokemonCenter_1F_Text_TrainMoreGengar
 # 129 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	playmoncry SPECIES_ALAKAZAM, 0
-# 130 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	msgbox IndigoPlateau_PokemonCenter_1F_Text_AlmostReadyAlakazam
-# 131 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
 	waitmoncry
-# 132 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+# 130 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
 	release
-# 133 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	
-# 134 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	
-# 135 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-IndigoPlateau_PokemonCenter_1F_EventScript_HardcoreCandyCheck::
-# 136 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	goto_if_unset FLAG_HARD, IndigoPlateau_PokemonCenter_1F_EventScript_NotHard
-# 137 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-    lock
-# 138 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-    special CheckGotMoreThan10RareCandies
-# 139 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-    compare VAR_RESULT, TRUE
-# 140 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-    goto_if_eq IndigoPlateau_PokemonCenter_1F_EventScript_HardcoreCandyCheckNo
-# 141 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-    release
-# 142 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-    end
-# 143 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-
-# 144 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-IndigoPlateau_PokemonCenter_1F_EventScript_HardcoreCandyCheckNo::
-# 145 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	lock
-# 146 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	applymovement OBJ_EVENT_ID_PLAYER, Common_Movement_WalkInPlaceFasterUp
-# 147 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	applymovement LOCALID_DOOR_GUARD, Common_Movement_FaceLeft
-# 148 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	waitmovement 0
-# 149 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	delay 20
-# 150 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	textcolor NPC_TEXT_COLOR_FEMALE
-# 151 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-    msgbox IndigoPlateau_PokemonCenter_1F_Text_No, MSGBOX_DEFAULT
-# 152 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	closemessage
-# 153 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	applymovement OBJ_EVENT_ID_PLAYER, CinnabarIsland_Movement_ForcePlayerFromDoor
-# 154 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	waitmovement 0
-# 155 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	release
-# 156 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+# 131 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
 	end
-# 157 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+# 132 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
 
-# 158 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-IndigoPlateau_PokemonCenter_1F_Text_No::
-# 159 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	.string "Hey, I detect that you have more\n"
-# 160 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	.string "than 15 rare candies!\l"
-# 161 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	.string "Please put them away before\l"
-# 162 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-	.string "entering the league!$"
-# 163 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+# 133 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+IndigoPlateau_PokemonCenter_1F_EventScript_AlmostReady::
+# 134 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	msgbox IndigoPlateau_PokemonCenter_1F_Text_AlmostReady, MSGBOX_NPC
+# 135 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	end
+# 136 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
 
-# 164 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
-IndigoPlateau_PokemonCenter_1F_EventScript_NotHard::
-# 165 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+# 137 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+IndigoPlateau_PokemonCenter_1F_EventScript_AlmostReadyAlakazam::
+# 138 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	lock
+# 139 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	faceplayer
+# 140 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_ALAKAZAM, 0
+# 141 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	msgbox IndigoPlateau_PokemonCenter_1F_Text_AlmostReadyAlakazam
+# 142 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	waitmoncry
+# 143 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
 	release
+# 144 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	
+# 145 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	
+# 146 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+IndigoPlateau_PokemonCenter_1F_EventScript_HardcoreCandyCheck::
+# 147 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	goto_if_unset FLAG_HARD, IndigoPlateau_PokemonCenter_1F_EventScript_NotHard
+# 148 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+    lock
+# 149 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+    special CheckGotMoreThan10RareCandies
+# 150 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+    compare VAR_RESULT, TRUE
+# 151 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+    goto_if_eq IndigoPlateau_PokemonCenter_1F_EventScript_HardcoreCandyCheckNo
+# 152 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+    release
+# 153 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+    end
+# 154 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+
+# 155 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+IndigoPlateau_PokemonCenter_1F_EventScript_HardcoreCandyCheckNo::
+# 156 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	lock
+# 157 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	applymovement OBJ_EVENT_ID_PLAYER, Common_Movement_WalkInPlaceFasterUp
+# 158 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	applymovement LOCALID_DOOR_GUARD, Common_Movement_FaceLeft
+# 159 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	waitmovement 0
+# 160 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	delay 20
+# 161 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	textcolor NPC_TEXT_COLOR_FEMALE
+# 162 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+    msgbox IndigoPlateau_PokemonCenter_1F_Text_No, MSGBOX_DEFAULT
+# 163 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	closemessage
+# 164 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	applymovement OBJ_EVENT_ID_PLAYER, CinnabarIsland_Movement_ForcePlayerFromDoor
+# 165 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	waitmovement 0
 # 166 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	release
+# 167 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	end
+# 168 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+
+# 169 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+IndigoPlateau_PokemonCenter_1F_Text_No::
+# 170 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	.string "Hey, I detect that you have more\n"
+# 171 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	.string "than 15 rare candies!\l"
+# 172 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	.string "Please put them away before\l"
+# 173 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	.string "entering the league!$"
+# 174 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+
+# 175 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+IndigoPlateau_PokemonCenter_1F_EventScript_NotHard::
+# 176 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
+	release
+# 177 "data/maps/IndigoPlateau_PokemonCenter_1F/scripts.pory"
 	end

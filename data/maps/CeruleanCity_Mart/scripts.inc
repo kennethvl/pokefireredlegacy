@@ -67,8 +67,32 @@ CeruleanCity_Mart_Items::
 # 34 "data/maps/CeruleanCity_Mart/scripts.pory"
 	.2byte ITEM_REPEL
 # 35 "data/maps/CeruleanCity_Mart/scripts.pory"
-	.2byte ITEM_NONE
+	.2byte ITEM_GREAT_BALL
 # 36 "data/maps/CeruleanCity_Mart/scripts.pory"
-	release
+	.2byte ITEM_ULTRA_BALL
 # 37 "data/maps/CeruleanCity_Mart/scripts.pory"
+	.2byte ITEM_MASTER_BALL
+# 38 "data/maps/CeruleanCity_Mart/scripts.pory"
+	.2byte ITEM_SAFARI_BALL
+# 39 "data/maps/CeruleanCity_Mart/scripts.pory"
+	.2byte ITEM_NET_BALL
+# 40 "data/maps/CeruleanCity_Mart/scripts.pory"
+	.2byte ITEM_DIVE_BALL
+# 41 "data/maps/CeruleanCity_Mart/scripts.pory"
+	.2byte ITEM_NEST_BALL
+# 42 "data/maps/CeruleanCity_Mart/scripts.pory"
+	.2byte ITEM_REPEAT_BALL
+# 43 "data/maps/CeruleanCity_Mart/scripts.pory"
+	.2byte ITEM_TIMER_BALL
+# 44 "data/maps/CeruleanCity_Mart/scripts.pory"
+	.2byte ITEM_LUXURY_BALL
+# 45 "data/maps/CeruleanCity_Mart/scripts.pory"
+	.2byte ITEM_PREMIER_BALL
+# 46 "data/maps/CeruleanCity_Mart/scripts.pory"
+	.2byte ITEM_LUCKY_EGG
+# 47 "data/maps/CeruleanCity_Mart/scripts.pory"
+	.2byte ITEM_NONE
+# 48 "data/maps/CeruleanCity_Mart/scripts.pory"
+	release
+# 49 "data/maps/CeruleanCity_Mart/scripts.pory"
 	end
