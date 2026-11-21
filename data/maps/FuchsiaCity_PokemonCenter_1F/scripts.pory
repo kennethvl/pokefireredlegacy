@@ -4,6 +4,7 @@ FuchsiaCity_PokemonCenter_1F_MapScripts::
 	.byte 0
 
 FuchsiaCity_PokemonCenter_1F_OnTransition::
+	call PokemonCenter_EventScript_UpdateMom
 	setrespawn SPAWN_FUCHSIA_CITY
 	end
 

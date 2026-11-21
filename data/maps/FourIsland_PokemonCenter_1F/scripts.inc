@@ -11,44 +11,46 @@ FourIsland_PokemonCenter_1F_MapScripts::
 # 6 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
 FourIsland_PokemonCenter_1F_OnTransition::
 # 7 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
-	setrespawn SPAWN_FOUR_ISLAND
+	call PokemonCenter_EventScript_UpdateMom
 # 8 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
-	end
+	setrespawn SPAWN_FOUR_ISLAND
 # 9 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
-
+	end
 # 10 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
-FourIsland_PokemonCenter_1F_EventScript_Nurse::
+
 # 11 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
-	lock
+FourIsland_PokemonCenter_1F_EventScript_Nurse::
 # 12 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
-	faceplayer
+	lock
 # 13 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
-	call EventScript_PkmnCenterNurse
+	faceplayer
 # 14 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
-	release
+	call EventScript_PkmnCenterNurse
 # 15 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
-	end
+	release
 # 16 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
-
+	end
 # 17 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
-FourIsland_PokemonCenter_1F_EventScript_Man::
+
 # 18 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
-	msgbox FourIsland_PokemonCenter_1F_Text_RareIceMonsInCave, MSGBOX_NPC
+FourIsland_PokemonCenter_1F_EventScript_Man::
 # 19 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
-	end
+	msgbox FourIsland_PokemonCenter_1F_Text_RareIceMonsInCave, MSGBOX_NPC
 # 20 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
-
-# 21 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
-FourIsland_PokemonCenter_1F_EventScript_Woman::
-# 22 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
-	msgbox FourIsland_PokemonCenter_1F_Text_DayCarePeopleFoundEggBefore, MSGBOX_NPC
-# 23 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
 	end
-# 24 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
+# 21 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
 
+# 22 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
+FourIsland_PokemonCenter_1F_EventScript_Woman::
+# 23 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
+	msgbox FourIsland_PokemonCenter_1F_Text_DayCarePeopleFoundEggBefore, MSGBOX_NPC
+# 24 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
+	end
 # 25 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
-FourIsland_PokemonCenter_1F_EventScript_Gentleman::
+
 # 26 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
-	msgbox FourIsland_PokemonCenter_1F_Text_NewPokemonJournalHasntArrived, MSGBOX_NPC
+FourIsland_PokemonCenter_1F_EventScript_Gentleman::
 # 27 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
+	msgbox FourIsland_PokemonCenter_1F_Text_NewPokemonJournalHasntArrived, MSGBOX_NPC
+# 28 "data/maps/FourIsland_PokemonCenter_1F/scripts.pory"
 	end

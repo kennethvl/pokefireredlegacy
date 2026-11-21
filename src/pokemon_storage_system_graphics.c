@@ -342,6 +342,15 @@ static void InitBoxMonSprites(u8 boxId)
                 gStorage->boxMonsSprites[boxPosition]->oam.objMode = ST_OAM_OBJ_BLEND;
         }
     }
+    // In Mom's mode, dim the Pokémon the current service can't improve
+    else if (gStorage->boxOption == OPTION_MOM)
+    {
+        for (boxPosition = 0; boxPosition < IN_BOX_COUNT; boxPosition++)
+        {
+            if (gStorage->boxMonsSprites[boxPosition] != NULL && MomShouldDimIcon(GetBoxedMonPtr(boxId, boxPosition)))
+                gStorage->boxMonsSprites[boxPosition]->oam.objMode = ST_OAM_OBJ_BLEND;
+        }
+    }
 }
 
 void CreateBoxMonIconAtPos(u8 boxPosition)
@@ -358,6 +367,8 @@ void CreateBoxMonIconAtPos(u8 boxPosition)
             species = GetDeoxysSpeciesFromForme(GetCurrentBoxMonData(boxPosition, MON_DATA_FORME));
         gStorage->boxMonsSprites[boxPosition] = CreateMonIconSprite(species, personality, x, y, 2, 19 - (boxPosition % IN_BOX_COLUMNS));
         if (gStorage->boxOption == OPTION_MOVE_ITEMS)
+            gStorage->boxMonsSprites[boxPosition]->oam.objMode = ST_OAM_OBJ_BLEND;
+        else if (gStorage->boxMonsSprites[boxPosition] != NULL && MomShouldDimIcon(GetBoxedMonPtr(StorageGetCurrentBox(), boxPosition)))
             gStorage->boxMonsSprites[boxPosition]->oam.objMode = ST_OAM_OBJ_BLEND;
     }
 }
@@ -457,6 +468,8 @@ static u8 CreateBoxMonIconsInColumn(u8 column, u16 distance, s16 speed)
                     gStorage->boxMonsSprites[boxPosition]->sSpeed = speed;
                     gStorage->boxMonsSprites[boxPosition]->sDestX = xDest;
                     gStorage->boxMonsSprites[boxPosition]->callback = SpriteCB_BoxMonIconScrollIn;
+                    if (MomShouldDimIcon(GetBoxedMonPtr(gStorage->incomingBoxId, boxPosition)))
+                        gStorage->boxMonsSprites[boxPosition]->oam.objMode = ST_OAM_OBJ_BLEND;
                     count++;
                 }
             }
@@ -649,6 +662,14 @@ void CreatePartyMonsSprites(bool8 visible)
         for (i = 0; i < PARTY_SIZE; i++)
         {
             if (gStorage->partySprites[i] != NULL && GetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM) == 0)
+                gStorage->partySprites[i]->oam.objMode = ST_OAM_OBJ_BLEND;
+        }
+    }
+    else if (gStorage->boxOption == OPTION_MOM)
+    {
+        for (i = 0; i < PARTY_SIZE; i++)
+        {
+            if (gStorage->partySprites[i] != NULL && MomShouldDimIcon(&gPlayerParty[i].box))
                 gStorage->partySprites[i]->oam.objMode = ST_OAM_OBJ_BLEND;
         }
     }

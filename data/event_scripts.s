@@ -9,6 +9,7 @@
 #include "constants/metatile_labels.h"
 #include "constants/pokemon.h"
 #include "constants/pokemon_training.h"
+#include "constants/pkmn_center_mom.h"
 #include "constants/moves.h"
 #include "constants/songs.h"
 #include "constants/sound.h"
@@ -1477,3 +1478,4 @@ Text_TestMsg::
 
 
 	.include "data/scripts/pokemon_training.inc"
+	.include "data/scripts/pkmn_center_mom.inc"

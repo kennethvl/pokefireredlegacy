@@ -1270,6 +1270,9 @@ static u8 HandleInput_InBox_Normal(void)
             break;
         }
 
+        if (JOY_NEW(A_BUTTON) && MomIsCursorMonBlocked())
+            return INPUT_MULTIMOVE_UNABLE; // plays the buzzer
+
         if ((JOY_NEW(A_BUTTON)) && SetSelectionMenuTexts())
         {
             if (!sInMultiMoveMode)
@@ -1530,6 +1533,10 @@ static u8 HandleInput_InParty(void)
                     return INPUT_CLOSE_BOX;
 
                 gotoBox = TRUE;
+            }
+            else if (MomIsCursorMonBlocked())
+            {
+                return INPUT_MULTIMOVE_UNABLE; // plays the buzzer
             }
             else if (SetSelectionMenuTexts())
             {
@@ -1807,6 +1814,13 @@ static bool8 SetMenuTextsForMon(void)
                 return FALSE;
         }
         break;
+    case OPTION_MOM:
+        if (species == SPECIES_NONE)
+            return FALSE;
+        SetMenuText(MENU_TEXT_MOM_SELECT);
+        SetMenuText(MENU_TEXT_SUMMARY);
+        SetMenuText(MENU_TEXT_CANCEL);
+        return TRUE;
     case OPTION_MOVE_ITEMS:
     default:
         return FALSE;
@@ -1995,6 +2009,8 @@ static void CreateCursorSprites(void)
 
 static void ToggleCursorMultiMoveMode(void)
 {
+    if (gStorage->boxOption == OPTION_MOM)
+        return; // no quick-move shortcuts while choosing for Mom
     sInMultiMoveMode = !sInMultiMoveMode;
     gStorage->cursorSprite->oam.paletteNum = gStorage->cursorPalNums[sInMultiMoveMode];
 }
@@ -2002,6 +2018,21 @@ static void ToggleCursorMultiMoveMode(void)
 u8 GetBoxCursorPosition(void)
 {
     return sCursorPosition;
+}
+
+u8 GetCursorArea(void)
+{
+    return sCursorArea;
+}
+
+// The Pokémon under the cursor (party or current box), or NULL if the cursor isn't on a Pokémon slot.
+struct BoxPokemon *GetCursorBoxMonPtr(void)
+{
+    if (sCursorArea == CURSOR_AREA_IN_PARTY && sCursorPosition < PARTY_SIZE)
+        return &gPlayerParty[sCursorPosition].box;
+    if (sCursorArea == CURSOR_AREA_IN_BOX)
+        return GetBoxedMonPtr(StorageGetCurrentBox(), sCursorPosition);
+    return NULL;
 }
 
 void GetCursorBoxColumnAndRow(u8 *column, u8 *row)
@@ -2045,6 +2076,15 @@ void TryShowItemAtCursor(void)
         TryLoadItemIconAtPos(CURSOR_AREA_IN_BOX, sCursorPosition);
 }
 
+static const u8 sText_MomSelect[] = _("SELECT");
+static const u8 sText_MomAllStats[] = _("ALL STATS");
+static const u8 sText_MomHp[] = _("HP");
+static const u8 sText_MomAttack[] = _("ATTACK");
+static const u8 sText_MomDefense[] = _("DEFENSE");
+static const u8 sText_MomSpAtk[] = _("SP. ATK");
+static const u8 sText_MomSpDef[] = _("SP. DEF");
+static const u8 sText_MomSpeed[] = _("SPEED");
+
 static const u8 *const sMenuTexts[] = {
     [MENU_TEXT_CANCEL]     = gPCText_Cancel,
     [MENU_TEXT_STORE]      = gPCText_Store,
@@ -2084,6 +2124,14 @@ static const u8 *const sMenuTexts[] = {
     [MENU_TEXT_POKECENTER] = gPCText_Pokecenter,
     [MENU_TEXT_MACHINE]    = gPCText_Machine,
     [MENU_TEXT_SIMPLE]     = gPCText_Simple,
+    [MENU_TEXT_MOM_SELECT]      = sText_MomSelect,
+    [MENU_TEXT_MOM_HYPER_ALL]   = sText_MomAllStats,
+    [MENU_TEXT_MOM_HYPER_HP]    = sText_MomHp,
+    [MENU_TEXT_MOM_HYPER_ATK]   = sText_MomAttack,
+    [MENU_TEXT_MOM_HYPER_DEF]   = sText_MomDefense,
+    [MENU_TEXT_MOM_HYPER_SPATK] = sText_MomSpAtk,
+    [MENU_TEXT_MOM_HYPER_SPDEF] = sText_MomSpDef,
+    [MENU_TEXT_MOM_HYPER_SPEED] = sText_MomSpeed,
 };
 
 void InitMenu(void)

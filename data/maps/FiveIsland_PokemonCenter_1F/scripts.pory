@@ -4,6 +4,7 @@ FiveIsland_PokemonCenter_1F_MapScripts::
 	.byte 0
 
 FiveIsland_PokemonCenter_1F_OnTransition::
+	call PokemonCenter_EventScript_UpdateMom
 	setrespawn SPAWN_FIVE_ISLAND
 	end
 

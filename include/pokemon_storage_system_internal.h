@@ -4,6 +4,7 @@
 #include "pokemon_storage_system.h"
 #include "mon_markings.h"
 #include "quest_log.h"
+#include "list_menu.h"
 
 // The maximum number of Pokémon icons that can appear on-screen.
 // By default the limit is 40 (though in practice only 37 can be).
@@ -23,6 +24,8 @@ enum
     OPTION_EXIT,
     OPTIONS_COUNT
 };
+// Mom's services, opened from the Pokémon Center (MomOpenPC). Not on the PC menu.
+#define OPTION_MOM OPTIONS_COUNT
 
 enum
 {
@@ -64,6 +67,14 @@ enum
     MENU_TEXT_POKECENTER,
     MENU_TEXT_MACHINE,
     MENU_TEXT_SIMPLE,
+    MENU_TEXT_MOM_SELECT,
+    MENU_TEXT_MOM_HYPER_ALL, // MENU_TEXT_MOM_HYPER_ALL + MOM_HYPER_* (order matches constants/pkmn_center_mom.h)
+    MENU_TEXT_MOM_HYPER_HP,
+    MENU_TEXT_MOM_HYPER_ATK,
+    MENU_TEXT_MOM_HYPER_DEF,
+    MENU_TEXT_MOM_HYPER_SPATK,
+    MENU_TEXT_MOM_HYPER_SPDEF,
+    MENU_TEXT_MOM_HYPER_SPEED,
 };
 
 // Return IDs for input handlers
@@ -432,6 +443,14 @@ struct PokemonStorageSystemData
     u8 unusedBuffer3[0x600];
     u8 wallpaperBgTilemapBuffer[0x1000];
     u8 menuTilemapBuffer[0x800];
+    struct ListMenuItem momListItems[NUM_NATURES]; // Mom's Nature / Hidden Power list
+    u8 momNatureTexts[NUM_NATURES][24];           // MOM_NATURE_OPTION_LENGTH
+    u16 momListScroll;
+    u16 momListRow;
+    u8 momListTaskId;
+    u8 momListWindowId;
+    u8 momListArrowsId;
+    u8 momChoice;
 };
 
 extern struct PokemonStorageSystemData *gStorage;
@@ -564,5 +583,11 @@ void InitMultiMonPlaceChange(bool8 moveCursorUp);
 void DestroyBoxMonIconAtPosition(u8 boxPosition);
 void SetBoxMonIconObjMode(u8 cursorPos, u8 objMode);
 void SetPartyMonIconObjMode(u8 cursorPos, u8 objMode);
+
+// Mom's services (OPTION_MOM)
+u8 GetCursorArea(void);
+struct BoxPokemon *GetCursorBoxMonPtr(void);
+bool8 MomShouldDimIcon(struct BoxPokemon *boxMon);
+bool8 MomIsCursorMonBlocked(void);
 
 #endif //GUARD_POKEMON_STORAGE_SYSTEM_INTERNAL_H

@@ -4,6 +4,7 @@ SevenIsland_PokemonCenter_1F_MapScripts::
 	.byte 0
 
 SevenIsland_PokemonCenter_1F_OnTransition::
+	call PokemonCenter_EventScript_UpdateMom
 	setrespawn SPAWN_SEVEN_ISLAND
 	end
 

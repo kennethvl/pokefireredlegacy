@@ -4,6 +4,7 @@ ThreeIsland_PokemonCenter_1F_MapScripts::
 	.byte 0
 
 ThreeIsland_PokemonCenter_1F_OnTransition::
+	call PokemonCenter_EventScript_UpdateMom
 	setrespawn SPAWN_THREE_ISLAND
 	end
 

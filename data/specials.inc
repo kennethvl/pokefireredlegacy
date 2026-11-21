@@ -464,4 +464,8 @@ gSpecials::
 	def_special BufferPokemonTrainingHiddenPower
 	def_special ShowIvTrainingServiceMenu
 	def_special ShowHiddenPowerTrainingMenu
+	def_special MomShowGreeting
+	def_special MomShowGoodbye
+	def_special MomShowServiceMenu
+	def_special MomOpenPC
 gSpecialsEnd::

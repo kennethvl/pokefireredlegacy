@@ -11,44 +11,46 @@ VermilionCity_PokemonCenter_1F_MapScripts::
 # 6 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
 VermilionCity_PokemonCenter_1F_OnTransition::
 # 7 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
-	setrespawn SPAWN_VERMILION_CITY
+	call PokemonCenter_EventScript_UpdateMom
 # 8 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
-	end
+	setrespawn SPAWN_VERMILION_CITY
 # 9 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
-
+	end
 # 10 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
-VermilionCity_PokemonCenter_1F_EventScript_Nurse::
+
 # 11 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
-	lock
+VermilionCity_PokemonCenter_1F_EventScript_Nurse::
 # 12 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
-	faceplayer
+	lock
 # 13 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
-	call EventScript_PkmnCenterNurse
+	faceplayer
 # 14 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
-	release
+	call EventScript_PkmnCenterNurse
 # 15 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
-	end
+	release
 # 16 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
-
+	end
 # 17 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
-VermilionCity_PokemonCenter_1F_EventScript_Man::
+
 # 18 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
-	msgbox VermilionCity_PokemonCenter_1F_Text_PoisonedMonFaintedWhileWalking, MSGBOX_NPC
+VermilionCity_PokemonCenter_1F_EventScript_Man::
 # 19 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
-	end
+	msgbox VermilionCity_PokemonCenter_1F_Text_PoisonedMonFaintedWhileWalking, MSGBOX_NPC
 # 20 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
-
-# 21 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
-VermilionCity_PokemonCenter_1F_EventScript_Hiker::
-# 22 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
-	msgbox VermilionCity_PokemonCenter_1F_Text_TrainerMonsStrongerThanWild, MSGBOX_NPC
-# 23 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
 	end
-# 24 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
+# 21 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
 
+# 22 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
+VermilionCity_PokemonCenter_1F_EventScript_Hiker::
+# 23 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
+	msgbox VermilionCity_PokemonCenter_1F_Text_TrainerMonsStrongerThanWild, MSGBOX_NPC
+# 24 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
+	end
 # 25 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
-VermilionCity_PokemonCenter_1F_EventScript_Youngster::
+
 # 26 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
-	msgbox VermilionCity_PokemonCenter_1F_Text_AllMonWeakToSpecificTypes, MSGBOX_NPC
+VermilionCity_PokemonCenter_1F_EventScript_Youngster::
 # 27 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
+	msgbox VermilionCity_PokemonCenter_1F_Text_AllMonWeakToSpecificTypes, MSGBOX_NPC
+# 28 "data/maps/VermilionCity_PokemonCenter_1F/scripts.pory"
 	end

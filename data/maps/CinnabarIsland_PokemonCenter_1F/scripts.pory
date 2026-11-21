@@ -6,6 +6,7 @@ CinnabarIsland_PokemonCenter_1F_MapScripts::
 	.byte 0
 
 CinnabarIsland_PokemonCenter_1F_OnTransition::
+	call PokemonCenter_EventScript_UpdateMom
 	setrespawn SPAWN_CINNABAR_ISLAND
 	end
 

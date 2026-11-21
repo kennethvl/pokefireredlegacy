@@ -4,6 +4,7 @@
 #include "global.h"
 #include "sprite.h"
 #include "constants/pokemon.h"
+#include "constants/daycare.h"
 
 struct PokemonSubstruct0
 {
@@ -398,6 +399,9 @@ bool8 TryIncrementMonLevel(struct Pokemon *mon);
 u32 CanMonLearnTMHM(struct Pokemon *mon, u8 tm);
 bool32 CanSpeciesLearnTMHM(u16 species, u8 tm);
 u8 GetMoveRelearnerMoves(struct Pokemon *mon, u16 *moves);
+// Level-up moves (like GetMoveRelearnerMoves) followed by Egg moves the Pokémon doesn't know. Mom's relearner.
+#define MAX_RELEARNER_WITH_EGG_MOVES (MAX_LEVEL_UP_MOVES + EGG_MOVES_ARRAY_COUNT)
+u8 GetRelearnerMovesWithEggMoves(struct Pokemon *mon, u16 *moves);
 u8 GetLevelUpMovesBySpecies(u16 species, u16 *moves);
 u8 GetNumberOfRelearnableMoves(struct Pokemon *mon);
 u16 SpeciesToPokedexNum(u16 species);

@@ -11,36 +11,38 @@ FiveIsland_PokemonCenter_1F_MapScripts::
 # 6 "data/maps/FiveIsland_PokemonCenter_1F/scripts.pory"
 FiveIsland_PokemonCenter_1F_OnTransition::
 # 7 "data/maps/FiveIsland_PokemonCenter_1F/scripts.pory"
-	setrespawn SPAWN_FIVE_ISLAND
+	call PokemonCenter_EventScript_UpdateMom
 # 8 "data/maps/FiveIsland_PokemonCenter_1F/scripts.pory"
-	end
+	setrespawn SPAWN_FIVE_ISLAND
 # 9 "data/maps/FiveIsland_PokemonCenter_1F/scripts.pory"
-
+	end
 # 10 "data/maps/FiveIsland_PokemonCenter_1F/scripts.pory"
-FiveIsland_PokemonCenter_1F_EventScript_Nurse::
+
 # 11 "data/maps/FiveIsland_PokemonCenter_1F/scripts.pory"
-	lock
+FiveIsland_PokemonCenter_1F_EventScript_Nurse::
 # 12 "data/maps/FiveIsland_PokemonCenter_1F/scripts.pory"
-	faceplayer
+	lock
 # 13 "data/maps/FiveIsland_PokemonCenter_1F/scripts.pory"
-	call EventScript_PkmnCenterNurse
+	faceplayer
 # 14 "data/maps/FiveIsland_PokemonCenter_1F/scripts.pory"
-	release
+	call EventScript_PkmnCenterNurse
 # 15 "data/maps/FiveIsland_PokemonCenter_1F/scripts.pory"
-	end
+	release
 # 16 "data/maps/FiveIsland_PokemonCenter_1F/scripts.pory"
-
-# 17 "data/maps/FiveIsland_PokemonCenter_1F/scripts.pory"
-FiveIsland_PokemonCenter_1F_EventScript_Chef::
-# 18 "data/maps/FiveIsland_PokemonCenter_1F/scripts.pory"
-	msgbox FiveIsland_PokemonCenter_1F_Text_OnMyWayToPrepareMeal, MSGBOX_NPC
-# 19 "data/maps/FiveIsland_PokemonCenter_1F/scripts.pory"
 	end
-# 20 "data/maps/FiveIsland_PokemonCenter_1F/scripts.pory"
+# 17 "data/maps/FiveIsland_PokemonCenter_1F/scripts.pory"
 
+# 18 "data/maps/FiveIsland_PokemonCenter_1F/scripts.pory"
+FiveIsland_PokemonCenter_1F_EventScript_Chef::
+# 19 "data/maps/FiveIsland_PokemonCenter_1F/scripts.pory"
+	msgbox FiveIsland_PokemonCenter_1F_Text_OnMyWayToPrepareMeal, MSGBOX_NPC
+# 20 "data/maps/FiveIsland_PokemonCenter_1F/scripts.pory"
+	end
 # 21 "data/maps/FiveIsland_PokemonCenter_1F/scripts.pory"
-FiveIsland_PokemonCenter_1F_EventScript_CooltrainerF::
+
 # 22 "data/maps/FiveIsland_PokemonCenter_1F/scripts.pory"
-	msgbox FiveIsland_PokemonCenter_1F_Text_YoureOnQuestToCatchEveryMon, MSGBOX_NPC
+FiveIsland_PokemonCenter_1F_EventScript_CooltrainerF::
 # 23 "data/maps/FiveIsland_PokemonCenter_1F/scripts.pory"
+	msgbox FiveIsland_PokemonCenter_1F_Text_YoureOnQuestToCatchEveryMon, MSGBOX_NPC
+# 24 "data/maps/FiveIsland_PokemonCenter_1F/scripts.pory"
 	end

@@ -1,0 +1,50 @@
+raw `
+@ Mom, found in every Pokémon Center (after receiving the POKéDEX, and not in HARD / NUZLOCKE mode).
+@ She offers free services: Hyper Training, Nature, Ability and Hidden Power type changes, max EVs and
+@ the Move Relearner (level-up and Egg moves). Each service opens the PC in Mom's mode (MomOpenPC in
+@ src/pokemon_storage_system_tasks.c), where the player picks any party or boxed Pokémon and the service
+@ runs without leaving the PC.
+
+@ Called from every Pokémon Center's OnTransition. FLAG_TEMP_10 hides Mom and is cleared on every map load.
+PokemonCenter_EventScript_UpdateMom::
+	goto_if_unset FLAG_SYS_POKEDEX_GET, PokemonCenter_EventScript_HideMom
+	goto_if_set FLAG_HARD, PokemonCenter_EventScript_HideMom
+	goto_if_set FLAG_NUZLOCKE, PokemonCenter_EventScript_HideMom
+	clearflag FLAG_TEMP_10
+	return
+
+PokemonCenter_EventScript_HideMom::
+	setflag FLAG_TEMP_10
+	return
+
+PokemonCenter_EventScript_Mom::
+	goto_if_questlog EventScript_ReleaseEnd
+	lock
+	faceplayer
+	special MomShowGreeting
+	waitmessage
+	waitbuttonpress
+PokemonCenter_EventScript_MomMenu::
+	message PokemonCenter_Text_MomWhatCanIDo
+	waitmessage
+	special MomShowServiceMenu
+	waitstate
+	goto_if_ge VAR_RESULT, MOM_NUM_SERVICES, PokemonCenter_EventScript_MomGoodbye
+	@ The menu index is the service (MODLOGIC_MOM_SERVICE_*): open the PC for it, then come back here.
+	copyvar VAR_0x8004, VAR_RESULT
+	special MomOpenPC
+	waitstate
+	goto PokemonCenter_EventScript_MomMenu
+	end
+
+PokemonCenter_EventScript_MomGoodbye::
+	special MomShowGoodbye
+	waitmessage
+	waitbuttonpress
+	release
+	end
+
+PokemonCenter_Text_MomWhatCanIDo:
+	.string "Now, what can your MOM do\n"
+	.string "for you today, dear?$"
+`

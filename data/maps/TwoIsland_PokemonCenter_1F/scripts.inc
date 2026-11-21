@@ -11,36 +11,38 @@ TwoIsland_PokemonCenter_1F_MapScripts::
 # 6 "data/maps/TwoIsland_PokemonCenter_1F/scripts.pory"
 TwoIsland_PokemonCenter_1F_OnTransition::
 # 7 "data/maps/TwoIsland_PokemonCenter_1F/scripts.pory"
-	setrespawn SPAWN_TWO_ISLAND
+	call PokemonCenter_EventScript_UpdateMom
 # 8 "data/maps/TwoIsland_PokemonCenter_1F/scripts.pory"
-	end
+	setrespawn SPAWN_TWO_ISLAND
 # 9 "data/maps/TwoIsland_PokemonCenter_1F/scripts.pory"
-
+	end
 # 10 "data/maps/TwoIsland_PokemonCenter_1F/scripts.pory"
-TwoIsland_PokemonCenter_1F_EventScript_Nurse::
+
 # 11 "data/maps/TwoIsland_PokemonCenter_1F/scripts.pory"
-	lock
+TwoIsland_PokemonCenter_1F_EventScript_Nurse::
 # 12 "data/maps/TwoIsland_PokemonCenter_1F/scripts.pory"
-	faceplayer
+	lock
 # 13 "data/maps/TwoIsland_PokemonCenter_1F/scripts.pory"
-	call EventScript_PkmnCenterNurse
+	faceplayer
 # 14 "data/maps/TwoIsland_PokemonCenter_1F/scripts.pory"
-	release
+	call EventScript_PkmnCenterNurse
 # 15 "data/maps/TwoIsland_PokemonCenter_1F/scripts.pory"
-	end
+	release
 # 16 "data/maps/TwoIsland_PokemonCenter_1F/scripts.pory"
-
-# 17 "data/maps/TwoIsland_PokemonCenter_1F/scripts.pory"
-TwoIsland_PokemonCenter_1F_EventScript_GBAKid::
-# 18 "data/maps/TwoIsland_PokemonCenter_1F/scripts.pory"
-	msgbox TwoIsland_PokemonCenter_1F_Text_HaveYouVisitedGameCorner, MSGBOX_NPC
-# 19 "data/maps/TwoIsland_PokemonCenter_1F/scripts.pory"
 	end
-# 20 "data/maps/TwoIsland_PokemonCenter_1F/scripts.pory"
+# 17 "data/maps/TwoIsland_PokemonCenter_1F/scripts.pory"
 
+# 18 "data/maps/TwoIsland_PokemonCenter_1F/scripts.pory"
+TwoIsland_PokemonCenter_1F_EventScript_GBAKid::
+# 19 "data/maps/TwoIsland_PokemonCenter_1F/scripts.pory"
+	msgbox TwoIsland_PokemonCenter_1F_Text_HaveYouVisitedGameCorner, MSGBOX_NPC
+# 20 "data/maps/TwoIsland_PokemonCenter_1F/scripts.pory"
+	end
 # 21 "data/maps/TwoIsland_PokemonCenter_1F/scripts.pory"
-TwoIsland_PokemonCenter_1F_EventScript_BugCatcher::
+
 # 22 "data/maps/TwoIsland_PokemonCenter_1F/scripts.pory"
-	msgbox TwoIsland_PokemonCenter_1F_Text_OldLadyLivesOutOnCape, MSGBOX_NPC
+TwoIsland_PokemonCenter_1F_EventScript_BugCatcher::
 # 23 "data/maps/TwoIsland_PokemonCenter_1F/scripts.pory"
+	msgbox TwoIsland_PokemonCenter_1F_Text_OldLadyLivesOutOnCape, MSGBOX_NPC
+# 24 "data/maps/TwoIsland_PokemonCenter_1F/scripts.pory"
 	end
