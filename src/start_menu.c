@@ -35,6 +35,8 @@
 #include "option_menu.h"
 #include "save_menu_util.h"
 #include "help_system.h"
+#include "list_menu.h"
+#include "menu_indicators.h"
 #include "constants/songs.h"
 #include "constants/maps.h"
 #include "constants/field_weather.h"
@@ -63,9 +65,10 @@ enum SaveCBReturn
 };
 
 static EWRAM_DATA bool8 (*sStartMenuCallback)(void) = NULL;
-static EWRAM_DATA u8 sStartMenuCursorPos = 0;
-static EWRAM_DATA bool8 sStorageMoveItems = FALSE;
-static const u8 sText_ItemStorage[] = _("ITEM BOX");
+static EWRAM_DATA u8 sStartMenuCursorPos = 0; // absolute index into sStartMenuOrder
+static EWRAM_DATA u16 sStartMenuScrollOffset = 0; // first entry shown when the menu scrolls (u16: read by the scroll arrows)
+static EWRAM_DATA u8 sStartMenuArrowsTaskIdPlus1 = 0; // scroll arrows task id + 1, or 0 if there are none
+static EWRAM_DATA bool8 sStorageMoveItems = FALSE; // SELECT on STORAGE opens it in Move Items mode
 static EWRAM_DATA u8 sNumStartMenuItems = 0;
 static EWRAM_DATA u8 sStartMenuOrder[MAX_STARTMENU_ITEMS] = {};
 static EWRAM_DATA s8 sDrawStartMenuState[2] = {};
@@ -87,8 +90,9 @@ static bool8 StartMenuPokedexCallback(void);
 static bool8 StartMenuPokemonCallback(void);
 static bool8 StartMenuStorageCallback(void);
 static bool8 CanAccessPokemonStorage(void);
-static u8 GetStartMenuFont(void);
-static u8 GetStartMenuRowHeight(void);
+static u8 GetStartMenuVisibleCount(void);
+static void ClampStartMenuScroll(void);
+static void RemoveStartMenuScrollArrows(void);
 static bool8 StartMenuBagCallback(void);
 static bool8 StartMenuPlayerCallback(void);
 static bool8 StartMenuSaveCallback(void);
@@ -215,6 +219,7 @@ static void SetUpStartMenu(void)
         SetUpStartMenu_NormalField();
     if (sStartMenuCursorPos >= sNumStartMenuItems)
         sStartMenuCursorPos = sNumStartMenuItems - 1;
+    ClampStartMenuScroll();
 }
 
 static void AppendToStartMenuItems(u8 newEntry)
@@ -308,37 +313,85 @@ static void DestroySafariZoneStatsWindow(void)
     }
 }
 
-// Eight entries fit above the help panel using the small font's 13-pixel glyphs.
-static u8 GetStartMenuFont(void)
+// The menu shows at most this many entries (its normal size without STORAGE); the rest scroll into view.
+#define START_MENU_MAX_VISIBLE 7
+#define START_MENU_ROW_HEIGHT  15
+
+static u8 GetStartMenuVisibleCount(void)
 {
-    return sNumStartMenuItems > 7 ? FONT_SMALL : FONT_NORMAL;
+    return sNumStartMenuItems < START_MENU_MAX_VISIBLE ? sNumStartMenuItems : START_MENU_MAX_VISIBLE;
 }
 
-static u8 GetStartMenuRowHeight(void)
+// Keeps sStartMenuCursorPos valid and inside the visible part of the menu.
+static void ClampStartMenuScroll(void)
 {
-    return sNumStartMenuItems > 7 ? 13 : 15;
+    u8 visible = GetStartMenuVisibleCount();
+
+    if (sStartMenuCursorPos >= sNumStartMenuItems)
+        sStartMenuCursorPos = 0;
+    if (sStartMenuCursorPos < sStartMenuScrollOffset)
+        sStartMenuScrollOffset = sStartMenuCursorPos;
+    else if (sStartMenuCursorPos >= sStartMenuScrollOffset + visible)
+        sStartMenuScrollOffset = sStartMenuCursorPos - visible + 1;
+    if (sStartMenuScrollOffset > sNumStartMenuItems - visible)
+        sStartMenuScrollOffset = sNumStartMenuItems - visible;
 }
 
+#define GFXTAG_START_MENU_SCROLL_ARROWS 2000
+#define PALTAG_START_MENU_SCROLL_ARROWS 100
+
+// Up/down arrows beside the pause menu when it has more entries than fit (shown/hidden by the arrows task as it
+// reads sStartMenuScrollOffset). Every way out of the menu removes them via RemoveStartMenuScrollArrows.
+static void AddStartMenuScrollArrows(void)
+{
+    struct ScrollArrowsTemplate template =
+    {
+        .firstArrowType = SCROLL_ARROW_UP,
+        .firstX = 204,
+        .firstY = 6,
+        .secondArrowType = SCROLL_ARROW_DOWN,
+        .secondX = 204,
+        .secondY = (START_MENU_MAX_VISIBLE * 2 + 1) * 8 + 2,
+        .fullyUpThreshold = 0,
+        .fullyDownThreshold = 0,
+        .tileTag = GFXTAG_START_MENU_SCROLL_ARROWS,
+        .palTag = PALTAG_START_MENU_SCROLL_ARROWS,
+        .palNum = 0,
+    };
+
+    if (sStartMenuArrowsTaskIdPlus1 != 0 || sNumStartMenuItems <= START_MENU_MAX_VISIBLE)
+        return;
+    template.fullyDownThreshold = sNumStartMenuItems - START_MENU_MAX_VISIBLE;
+    sStartMenuArrowsTaskIdPlus1 = AddScrollIndicatorArrowPair(&template, &sStartMenuScrollOffset) + 1;
+}
+
+static void RemoveStartMenuScrollArrows(void)
+{
+    if (sStartMenuArrowsTaskIdPlus1 == 0)
+        return;
+    RemoveScrollIndicatorArrowPair(sStartMenuArrowsTaskIdPlus1 - 1);
+    sStartMenuArrowsTaskIdPlus1 = 0;
+}
+
+// *cursor_p is the row on screen; the entry printed there is row + sStartMenuScrollOffset.
 static s8 PrintStartMenuItems(s8 *cursor_p, u8 nitems)
 {
     s16 i = *cursor_p;
     do
     {
-        if (GetStartMenuFont() == FONT_NORMAL
-         && (sStartMenuOrder[i] == STARTMENU_PLAYER || sStartMenuOrder[i] == STARTMENU_PLAYER2))
+        u8 entry = sStartMenuOrder[i + sStartMenuScrollOffset];
+
+        if (entry == STARTMENU_PLAYER || entry == STARTMENU_PLAYER2)
         {
-            Menu_PrintFormatIntlPlayerName(GetStartMenuWindowId(), sStartMenuActionTable[sStartMenuOrder[i]].text, 8, i * GetStartMenuRowHeight());
+            Menu_PrintFormatIntlPlayerName(GetStartMenuWindowId(), sStartMenuActionTable[entry].text, 8, i * START_MENU_ROW_HEIGHT);
         }
         else
         {
-            if (sStartMenuOrder[i] == STARTMENU_STORAGE && sStorageMoveItems)
-                StringCopy(gStringVar4, sText_ItemStorage);
-            else
-                StringExpandPlaceholders(gStringVar4, sStartMenuActionTable[sStartMenuOrder[i]].text);
-            AddTextPrinterParameterized(GetStartMenuWindowId(), GetStartMenuFont(), gStringVar4, 8, i * GetStartMenuRowHeight(), 0xFF, NULL);
+            StringExpandPlaceholders(gStringVar4, sStartMenuActionTable[entry].text);
+            AddTextPrinterParameterized(GetStartMenuWindowId(), FONT_NORMAL, gStringVar4, 8, i * START_MENU_ROW_HEIGHT, 0xFF, NULL);
         }
         i++;
-        if (i >= sNumStartMenuItems)
+        if (i >= GetStartMenuVisibleCount())
         {
             *cursor_p = i;
             return TRUE;
@@ -361,7 +414,7 @@ static s8 DoDrawStartMenu(void)
         break;
     case 2:
         LoadStdWindowFrameGfx();
-        DrawStdWindowFrame(CreateStartMenuWindow(min(sNumStartMenuItems, 7)), FALSE);
+        DrawStdWindowFrame(CreateStartMenuWindow(GetStartMenuVisibleCount()), FALSE);
         sDrawStartMenuState[0]++;
         break;
     case 3:
@@ -374,7 +427,8 @@ static s8 DoDrawStartMenu(void)
             sDrawStartMenuState[0]++;
         break;
     case 5:
-        sStartMenuCursorPos = Menu_InitCursor(GetStartMenuWindowId(), GetStartMenuFont(), 0, 0, GetStartMenuRowHeight(), sNumStartMenuItems, sStartMenuCursorPos);
+        Menu_InitCursor(GetStartMenuWindowId(), FONT_NORMAL, 0, 0, START_MENU_ROW_HEIGHT, GetStartMenuVisibleCount(), sStartMenuCursorPos - sStartMenuScrollOffset);
+        AddStartMenuScrollArrows();
         if (!MenuHelpers_IsLinkActive() && InUnionRoom() != TRUE && gSaveBlock2Ptr->optionsButtonMode == OPTIONS_BUTTON_MODE_HELP)
         {
             DrawHelpMessageWindowWithText(sStartMenuDescPointers[sStartMenuOrder[sStartMenuCursorPos]]);
@@ -453,25 +507,50 @@ void ShowStartMenu(void)
     LockPlayerFieldControls();
 }
 
+// Moves the cursor by delta (wrapping around). If the menu is longer than the window, the list scrolls
+// so the cursor stays visible.
+static void MoveStartMenuCursor(s8 delta)
+{
+    u8 visible = GetStartMenuVisibleCount();
+    u16 oldOffset = sStartMenuScrollOffset;
+    s8 row;
+
+    if (sNumStartMenuItems <= visible)
+    {
+        sStartMenuCursorPos = Menu_MoveCursor(delta);
+        return;
+    }
+
+    sStartMenuCursorPos = (sStartMenuCursorPos + sNumStartMenuItems + delta) % sNumStartMenuItems;
+    ClampStartMenuScroll();
+    if (sStartMenuScrollOffset == oldOffset)
+    {
+        Menu_MoveCursorNoWrapAround(delta);
+        return;
+    }
+
+    FillWindowPixelBuffer(GetStartMenuWindowId(), PIXEL_FILL(1));
+    row = 0;
+    PrintStartMenuItems(&row, visible);
+    Menu_InitCursor(GetStartMenuWindowId(), FONT_NORMAL, 0, 0, START_MENU_ROW_HEIGHT, visible, sStartMenuCursorPos - sStartMenuScrollOffset);
+    CopyWindowToVram(GetStartMenuWindowId(), COPYWIN_GFX);
+}
+
 static bool8 StartCB_HandleInput(void)
 {
-    if (JOY_NEW(SELECT_BUTTON) && sStartMenuOrder[sStartMenuCursorPos] == STARTMENU_STORAGE)
+    // A opens STORAGE in Move Pokémon mode, SELECT in Move Items mode.
+    if (JOY_NEW(A_BUTTON | SELECT_BUTTON) && sStartMenuOrder[sStartMenuCursorPos] == STARTMENU_STORAGE)
     {
-        s8 cursor = sStartMenuCursorPos;
-        u8 windowId = GetStartMenuWindowId();
-
-        sStorageMoveItems = !sStorageMoveItems;
         PlaySE(SE_SELECT);
-        FillWindowPixelRect(windowId, PIXEL_FILL(1), 8, sStartMenuCursorPos * GetStartMenuRowHeight(),
-                            GetWindowAttribute(windowId, WINDOW_WIDTH) * 8 - 8, GetStartMenuRowHeight());
-        PrintStartMenuItems(&cursor, 1);
-        CopyWindowToVram(windowId, COPYWIN_GFX);
+        sStorageMoveItems = JOY_NEW(SELECT_BUTTON) ? TRUE : FALSE;
+        sStartMenuCallback = StartMenuStorageCallback;
+        StartMenu_FadeScreenIfLeavingOverworld();
         return FALSE;
     }
     if (JOY_NEW(DPAD_UP))
     {
         PlaySE(SE_SELECT);
-        sStartMenuCursorPos = Menu_MoveCursor(-1);
+        MoveStartMenuCursor(-1);
         if (!MenuHelpers_IsLinkActive() && InUnionRoom() != TRUE && gSaveBlock2Ptr->optionsButtonMode == OPTIONS_BUTTON_MODE_HELP)
         {
             PrintTextOnHelpMessageWindow(sStartMenuDescPointers[sStartMenuOrder[sStartMenuCursorPos]], 2);
@@ -480,7 +559,7 @@ static bool8 StartCB_HandleInput(void)
     if (JOY_NEW(DPAD_DOWN))
     {
         PlaySE(SE_SELECT);
-        sStartMenuCursorPos = Menu_MoveCursor(+1);
+        MoveStartMenuCursor(+1);
         if (!MenuHelpers_IsLinkActive() && InUnionRoom() != TRUE && gSaveBlock2Ptr->optionsButtonMode == OPTIONS_BUTTON_MODE_HELP)
         {
             PrintTextOnHelpMessageWindow(sStartMenuDescPointers[sStartMenuOrder[sStartMenuCursorPos]], 2);
@@ -511,6 +590,7 @@ static void StartMenu_FadeScreenIfLeavingOverworld(void)
      && sStartMenuCallback != StartMenuExitCallback
      && sStartMenuCallback != StartMenuSafariZoneRetireCallback)
     {
+        RemoveStartMenuScrollArrows();
         StopPokemonLeagueLightingEffectTask();
         FadeScreen(FADE_TO_BLACK, 0);
     }
@@ -782,6 +862,7 @@ static bool8 SaveDialog_Wait60FramesThenCheckAButtonHeld(void)
 
 static u8 SaveDialogCB_PrintAskSaveText(void)
 {
+    RemoveStartMenuScrollArrows();
     ClearStdWindowAndFrame(GetStartMenuWindowId(), FALSE);
     RemoveStartMenuWindow();
     DestroyHelpMessageWindow(0);
@@ -1073,6 +1154,7 @@ static void CloseSaveStatsWindow(void)
 
 static void CloseStartMenu(void)
 {
+    RemoveStartMenuScrollArrows();
     PlaySE(SE_SELECT);
     ClearStdWindowAndFrame(GetStartMenuWindowId(), TRUE);
     RemoveStartMenuWindow();

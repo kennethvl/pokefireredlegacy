@@ -314,7 +314,8 @@ static const struct ListMenuItem sMomServiceItems[] =
 #define MOM_MENU_LEFT     (29 - MOM_MENU_WIDTH)
 #define MOM_MENU_TOP      1
 #define MOM_MENU_ARROW_X  (8 * (MOM_MENU_LEFT + MOM_MENU_WIDTH / 2) + 4)
-#define TAG_MOM_MENU_ARROWS 0x1050
+#define TAG_MOM_MENU_ARROWS_GFX 2000 // the tags other field list menus use (field_specials.c)
+#define TAG_MOM_MENU_ARROWS_PAL 100
 
 // The cursor comes back to the last service between visits to the PC (reset when Mom says goodbye).
 static EWRAM_DATA u16 sMomMenuScroll = 0;
@@ -378,7 +379,7 @@ void MomShowServiceMenu(void)
                                                                8 * MOM_MENU_TOP - 4,
                                                                8 * (MOM_MENU_TOP + MOM_MENU_ROWS * 2) + 4,
                                                                ARRAY_COUNT(sMomServiceItems) - MOM_MENU_ROWS,
-                                                               TAG_MOM_MENU_ARROWS, TAG_MOM_MENU_ARROWS, &sMomMenuScroll);
+                                                               TAG_MOM_MENU_ARROWS_GFX, TAG_MOM_MENU_ARROWS_PAL, &sMomMenuScroll);
     task->tSkipFrame = TRUE;
     PutWindowTilemap(task->tWindowId);
     CopyWindowToVram(task->tWindowId, COPYWIN_FULL);

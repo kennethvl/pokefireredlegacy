@@ -4,6 +4,7 @@ Run with: python3 tests/test_remote_storage.py
 Uses the production menu functions; ROM UI rendering still needs emulator QA.
 """
 import json
+import re
 import unittest
 
 import test_exp_progression as progression
@@ -41,11 +42,10 @@ typedef uint16_t u16;
 typedef int bool8;
 #define TRUE 1
 #define FALSE 0
-#define FONT_SMALL 0
-#define FONT_NORMAL 2
 ''' + menu_enum + "\n" + "".join(maps) + r'''
 struct {struct {u8 mapGroup, mapNum;} location;} save, *gSaveBlock1Ptr = &save;
 u8 sNumStartMenuItems, sStartMenuCursorPos, sStartMenuOrder[MAX_STARTMENU_ITEMS];
+u16 sStartMenuScrollOffset;
 int hasPokemon = TRUE, hasPokedex = TRUE, inLink, inUnion, inSafari;
 bool8 FlagGet(int flag) {return flag == FLAG_SYS_POKEMON_GET ? hasPokemon : hasPokedex;}
 bool8 IsUpdateLinkStateCBActive(void) {return inLink;}
@@ -55,8 +55,10 @@ void AppendToList(u8 *order, u8 *count, u8 entry) {assert(*count < MAX_STARTMENU
 '''
         for name in ["AppendToStartMenuItems", "CanAccessPokemonStorage", "SetUpStartMenu_NormalField",
                      "SetUpStartMenu_SafariZone", "SetUpStartMenu_Link", "SetUpStartMenu_UnionRoom",
-                     "SetUpStartMenu", "GetStartMenuFont", "GetStartMenuRowHeight"]:
+                     "GetStartMenuVisibleCount", "ClampStartMenuScroll", "SetUpStartMenu"]:
             code += function("src/start_menu.c", name)
+        visible = re.search(r"#define START_MENU_MAX_VISIBLE (\d+)", source).group(1)
+        code = code.replace("struct {struct", "#define START_MENU_MAX_VISIBLE " + visible + "\nstruct {struct", 1)
         code += r'''
 void set_map(u16 map) {save.location.mapGroup = map >> 8; save.location.mapNum = map & 255;}
 int has_storage(void) {
@@ -73,14 +75,20 @@ int main(void) {
         set_map(allowed[i]); SetUpStartMenu();
         assert(has_storage() && sNumStartMenuItems == 8);
         assert(sStartMenuOrder[2] == STARTMENU_STORAGE);
-        assert(GetStartMenuFont() == FONT_SMALL && GetStartMenuRowHeight() == 13);
-        assert((sNumStartMenuItems - 1) * GetStartMenuRowHeight() + 13 <= 104);
+        // Seven rows are shown (the normal menu's size); the cursor's row is always among them.
+        assert(GetStartMenuVisibleCount() == 7);
+        for (sStartMenuCursorPos = 0; sStartMenuCursorPos < sNumStartMenuItems; sStartMenuCursorPos++) {
+            ClampStartMenuScroll();
+            assert(sStartMenuScrollOffset <= sNumStartMenuItems - 7);
+            assert(sStartMenuCursorPos >= sStartMenuScrollOffset && sStartMenuCursorPos < sStartMenuScrollOffset + 7);
+        }
+        sStartMenuCursorPos = 0; sStartMenuScrollOffset = 0;
     }
     for (i = 0; i < sizeof(blocked)/sizeof(blocked[0]); i++) {
         sStartMenuCursorPos = 7; set_map(blocked[i]); SetUpStartMenu();
         assert(!has_storage() && sNumStartMenuItems == 7);
         assert(sStartMenuCursorPos < sNumStartMenuItems);
-        assert(GetStartMenuFont() == FONT_NORMAL && GetStartMenuRowHeight() == 15);
+        assert(GetStartMenuVisibleCount() == 7 && sStartMenuScrollOffset == 0); // no scrolling needed
     }
     set_map(MAP_PALLET_TOWN); inSafari = TRUE; SetUpStartMenu();
     assert(has_storage() && sNumStartMenuItems == 8 && sStartMenuOrder[0] == STARTMENU_RETIRE);
@@ -88,7 +96,7 @@ int main(void) {
     inLink = FALSE; inUnion = TRUE; SetUpStartMenu(); assert(!has_storage());
     inUnion = inSafari = FALSE; hasPokemon = hasPokedex = FALSE;
     SetUpStartMenu(); assert(!has_storage());
-    puts("Storage availability: five League rooms blocked; field/Safari and menu bounds passed");
+    puts("Storage availability: five League rooms blocked; field/Safari menus and scrolling passed");
 }
 '''
         self.compile_and_run(code)
@@ -157,11 +165,13 @@ typedef int bool8;
 #define FALSE 0
 struct {bool8 active;} gPaletteFade;
 int sounds, safariCleanup, windowCleanup;
+bool8 sStorageMoveItems;
 void (*mainCallback)(void);
 void PlayRainStoppingSoundEffect(void) {sounds++;}
 void DestroySafariZoneStatsWindow(void) {safariCleanup++;}
 void CleanupOverworldWindowsAndTilemaps(void) {windowCleanup++;}
 void CB2_OpenPokemonStorageFromStartMenu(void) {}
+void CB2_OpenPokemonStorageItemsFromStartMenu(void) {}
 void SetMainCallback2(void (*callback)(void)) {mainCallback = callback;}
 ''' + function("src/start_menu.c", "StartMenuStorageCallback") + r'''
 int main(void) {
@@ -171,6 +181,8 @@ int main(void) {
     assert(StartMenuStorageCallback());
     assert(sounds == 1 && safariCleanup == 1 && windowCleanup == 1);
     assert(mainCallback == CB2_OpenPokemonStorageFromStartMenu);
+    sStorageMoveItems = TRUE; // SELECT on STORAGE
+    assert(StartMenuStorageCallback() && mainCallback == CB2_OpenPokemonStorageItemsFromStartMenu);
     puts("Pause storage launch waits for fade and cleans up the overworld UI");
 }
 '''
